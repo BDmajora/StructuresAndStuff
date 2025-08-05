@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "stuffmod",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This mod aims to help new BTA modders.",
+  "name": "Structures and Stuff",
+  "description": "Backports and Reinvents Structures and Features of vanilla minecraft",
   "authors": [
-    "Turnip Labs"
+    "BDMajora"
   ],
   "contact": {
     "homepage": "",
@@ -19,20 +19,20 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-			"turniplabs.examplemod.ExampleMod"
+			"bdmajora.stuffmod.StuffMod"
     ],
 		"beforeGameStart": [
-			"turniplabs.examplemod.ExampleMod"
+			"bdmajora.stuffmod.StuffMod"
 		],
 		"afterGameStart": [
-			"turniplabs.examplemod.ExampleMod"
+			"bdmajora.stuffmod.StuffMod"
 		],
 		"recipesReady": [
-			"turniplabs.examplemod.ExampleMod"
+			"bdmajora.stuffmod.StuffMod"
 		]
 	},
   "mixins": [
-      "examplemod.mixins.json"
+      "stuffmod.mixins.json"
   ],
 
   "depends": {
