@@ -111,6 +111,10 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-1.2-api:$log4jVersion")
 
     implementation("org.apache.commons:commons-lang3:3.12.0")
+
+	implementation("com.electronwill.night-config:core:3.6.6")
+	implementation("com.electronwill.night-config:toml:3.6.6")
+
     include("org.apache.commons:commons-lang3:3.12.0")
 
     modImplementation("com.github.Better-than-Adventure:legacy-lwjgl3:1.0.5")
