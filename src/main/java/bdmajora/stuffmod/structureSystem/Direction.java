@@ -5,7 +5,6 @@ import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.util.helper.Axis;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.WorldSource;
-import bdmajora.stuffmod.structureSystem.BlockPosition;
 import net.minecraft.core.util.phys.Vec3;
 
 public enum Direction {
