@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "backport:block/barrel",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "backport:block/barrel",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "backport:block/barrel",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "backport:block/barrel",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "backport:block/barrel"
+    },
+    "facing=west": {
+      "model": "backport:block/barrel",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

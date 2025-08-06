@@ -1,0 +1,12 @@
+{
+  "parent": "backport:block/cube",
+  "textures": {
+    "down": "backport:block/dark_oak_planks",
+    "east": "backport:block/cartography_table_side3",
+    "north": "backport:block/cartography_table_side3",
+    "particle": "backport:block/cartography_table_side3",
+    "south": "backport:block/cartography_table_side1",
+    "up": "backport:block/cartography_table_top",
+    "west": "backport:block/cartography_table_side2"
+  }
+}

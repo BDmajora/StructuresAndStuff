@@ -1,0 +1,6 @@
+{
+  "parent": "backport:block/fence_inventory",
+  "textures": {
+    "texture": "backport:block/crimson_planks"
+  }
+}

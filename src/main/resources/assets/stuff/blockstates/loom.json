@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "backport:block/loom",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "backport:block/loom"
+    },
+    "facing=south": {
+      "model": "backport:block/loom",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "backport:block/loom",
+      "y": 270
+    }
+  }
+}

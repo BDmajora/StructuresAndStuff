@@ -1,0 +1,6 @@
+{
+  "parent": "backport:block/fence_side",
+  "textures": {
+    "texture": "backport:block/jungle_planks"
+  }
+}

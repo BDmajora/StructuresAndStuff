@@ -1,0 +1,7 @@
+{
+  "parent": "backport:block/template_glass_pane_post",
+  "textures": {
+    "edge": "backport:block/lime_stained_glass_pane_top",
+    "pane": "backport:block/lime_stained_glass"
+  }
+}

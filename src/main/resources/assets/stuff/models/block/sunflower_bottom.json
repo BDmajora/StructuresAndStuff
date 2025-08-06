@@ -1,0 +1,6 @@
+{
+  "parent": "backport:block/cross",
+  "textures": {
+    "cross": "backport:block/sunflower_bottom"
+  }
+}

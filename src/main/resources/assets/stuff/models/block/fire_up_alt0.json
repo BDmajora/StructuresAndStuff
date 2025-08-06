@@ -1,0 +1,6 @@
+{
+  "parent": "backport:block/template_fire_up_alt",
+  "textures": {
+    "fire": "backport:block/fire_0"
+  }
+}

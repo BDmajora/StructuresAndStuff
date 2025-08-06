@@ -1,0 +1,6 @@
+{
+  "parent": "backport:block/wall_inventory",
+  "textures": {
+    "wall": "backport:block/red_sandstone"
+  }
+}

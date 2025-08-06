@@ -1,0 +1,8 @@
+{
+  "parent": "backport:block/cube_bottom_top",
+  "textures": {
+    "bottom": "backport:block/barrel_bottom",
+    "side": "backport:block/barrel_side",
+    "top": "backport:block/barrel_top"
+  }
+}

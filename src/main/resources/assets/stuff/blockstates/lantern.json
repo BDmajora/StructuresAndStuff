@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "hanging=false": {
+      "model": "backport:block/lantern"
+    },
+    "hanging=true": {
+      "model": "backport:block/lantern_hanging"
+    }
+  }
+}

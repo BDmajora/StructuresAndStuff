@@ -1,0 +1,6 @@
+{
+  "parent": "backport:block/template_wall_post",
+  "textures": {
+    "wall": "backport:block/cobbled_deepslate"
+  }
+}

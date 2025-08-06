@@ -1,0 +1,16 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "edge": "backport:block/glass_pane_top",
+    "pane": "backport:block/glass",
+    "particle": "backport:block/glass"
+  },
+  "elements": [
+    {   "from": [ 7, 0, 7 ],
+      "to": [ 9, 16, 9 ],
+      "faces": {
+        "north": { "uv": [  9, 0,  7, 16 ], "texture": "#pane" }
+      }
+    }
+  ]
+}

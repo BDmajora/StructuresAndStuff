@@ -1,0 +1,6 @@
+{
+    "parent": "backport:item/generated",
+    "textures": {
+        "layer0": "backport:item/bell"
+    }
+}

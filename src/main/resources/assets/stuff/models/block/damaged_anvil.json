@@ -1,0 +1,6 @@
+{
+  "parent": "backport:block/template_anvil",
+  "textures": {
+    "top": "backport:block/damaged_anvil_top"
+  }
+}

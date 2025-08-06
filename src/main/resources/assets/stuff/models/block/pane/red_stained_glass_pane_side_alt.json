@@ -1,0 +1,7 @@
+{
+  "parent": "backport:block/template_glass_pane_side_alt",
+  "textures": {
+    "edge": "backport:block/red_stained_glass_pane_top",
+    "pane": "backport:block/red_stained_glass"
+  }
+}

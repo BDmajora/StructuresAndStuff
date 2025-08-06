@@ -1,0 +1,6 @@
+{
+  "parent": "backport:block/template_fire_side",
+  "textures": {
+    "fire": "backport:block/soul_fire_0"
+  }
+}

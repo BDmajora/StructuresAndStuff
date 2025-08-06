@@ -1,0 +1,6 @@
+{
+  "parent": "backport:block/template_lantern",
+  "textures": {
+    "lantern": "backport:block/soul_lantern"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "backport:block/bookshelf/template_chiseled_bookshelf_slot_top_mid",
+  "textures": {
+    "texture": "backport:block/chiseled_bookshelf_occupied"
+  }
+}

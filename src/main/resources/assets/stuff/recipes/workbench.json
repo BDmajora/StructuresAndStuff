@@ -1,0 +1,74 @@
+[
+  {
+    "name": "minecraft:workbench/slab_fortress_brick",
+    "type": "minecraft:crafting/shaped",
+    "pattern": [
+      "GGG"
+    ],
+    "symbols": [
+      {
+        "symbol": "G",
+        "stack": {
+          "key": "tile.btm.brick.fortress",
+          "amount": 1,
+          "meta": 0
+        }
+      }
+    ],
+    "result": {
+      "key": "tile.btm.slab.brick.fortress",
+      "amount": 6,
+      "meta": 0
+    },
+    "consumeContainers": true
+  },
+  {
+    "name": "minecraft:workbench/stair_fortress_brick",
+    "type": "minecraft:crafting/shaped",
+    "pattern": [
+      "G  ",
+      "GG ",
+      "GGG"
+    ],
+    "symbols": [
+      {
+        "symbol": "G",
+        "stack": {
+          "key": "tile.btm.brick.fortress",
+          "amount": 1,
+          "meta": 0
+        }
+      }
+    ],
+    "result": {
+      "key": "tile.btm.stairs.brick.fortress",
+      "amount": 6,
+      "meta": 0
+    },
+    "consumeContainers": true
+  },
+  {
+    "name": "minecraft:workbench/fence_fortress_brick",
+    "type": "minecraft:crafting/shaped",
+    "pattern": [
+      "TTT",
+      "TTT"
+    ],
+    "symbols": [
+      {
+        "symbol": "T",
+        "stack": {
+          "key": "tile.btm.brick.fortress",
+          "amount": 1,
+          "meta": 0
+        }
+      }
+    ],
+    "result": {
+      "key": "tile.btm.fence.brick.fortress",
+      "amount": 8,
+      "meta": 0
+    },
+    "consumeContainers": true
+  }
+]

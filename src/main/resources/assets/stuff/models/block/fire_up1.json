@@ -1,0 +1,6 @@
+{
+  "parent": "backport:block/template_fire_up",
+  "textures": {
+    "fire": "backport:block/fire_1"
+  }
+}

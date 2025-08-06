@@ -1,0 +1,10 @@
+{
+  "parent": "backport:block/orientable_with_bottom",
+  "textures": {
+    "bottom": "backport:block/beehive_end",
+    "front": "backport:block/beehive_front",
+    "particle": "backport:block/beehive_side",
+    "side": "backport:block/beehive_side",
+    "top": "backport:block/beehive_end"
+  }
+}

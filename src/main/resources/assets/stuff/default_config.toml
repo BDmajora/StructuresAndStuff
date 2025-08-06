@@ -1,0 +1,77 @@
+# Structure Backports Config
+# Edit this however you want, just follow common sense and TOML syntax
+# If you screw up, you can delete this file and the mod will
+# copy the default config back here again after you run the game.
+# If you have more ideas for config options, reach out on discord
+
+# Pro tip: F3 + h in game will allow you to see hidden tooltips,
+# which will allow you to see the block keys used for some options
+
+# In serverside mode, new blocks, entities, and items will not be created.
+# In order to use this mod serverside, you must change other settings to be compatible
+# with vanilla bta clients, else it will crash
+serverside_mode = false
+
+# The mod will attempt to use block ids starting with this.
+# Only change if there is an id collision with another mod
+starting_block_id = 8600
+
+# Ditto but with entities
+starting_entity_id = 335
+
+[ mob.blaze ]
+score_value = 800
+attack_str = 6
+move_speed = 0.6
+max_health = 28
+variants = true
+# When enabled, blaze fireballs are deflectable like ghast fireballs
+fireball_deflection = true
+
+# Fortress guardians are this mod's version of wither skeletons
+[ mob.fortress_guard_skeleton ]
+score_value = 700
+# Half hearts
+attack_str = 5
+max_health = 25
+move_speed = 0.75
+# Higher = more spawning
+spawn_weight = 12
+# Higher = more spawn in group
+pack_size = 2
+# 1 in _ chance to spawn ranged variant
+ranged_chance = 4
+# They will ONLY naturally spawn on these blocks
+spawnable_blocks = [
+    "btm:block/fortress_brick"
+]
+
+[ mob.cave_spider ]
+score_value = 400
+# Half hearts
+attack_str = 5
+max_health = 15
+move_speed = 0.7
+
+# Anything labeled rarity - increase the number to become more rare, decrease for less.
+# Different options labeled rarity aren't comparable to each other due to different ways these structures generate
+# Even though the rarity for mineshaft is much higher, it is not much more rare.
+[ structure.mineshaft ]
+enabled = true
+rarity = 250
+chest_rarity = 100
+spawner_mob = "CaveSpider"
+
+[ structure.nether_fortress ]
+enabled = true
+rarity = 3
+chest_rarity = 5
+spawner_mob = "Blaze"
+
+# Nether Fortress block palettes.
+# You should be able to put any blocks in here (including any block in BTA + blocks from other BTA mods)
+# If you type the identifier correctly, that is.
+[[ structure.nether_fortress.palettes ]]
+brick = "btm:block/fortress_brick"
+stair = "btm:block/fortress_brick_stairs"
+fence = "btm:block/fortress_brick_fence"

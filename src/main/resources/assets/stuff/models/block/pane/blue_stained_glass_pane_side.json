@@ -1,0 +1,7 @@
+{
+  "parent": "backport:block/template_glass_pane_side",
+  "textures": {
+    "edge": "backport:block/blue_stained_glass_pane_top",
+    "pane": "backport:block/blue_stained_glass"
+  }
+}

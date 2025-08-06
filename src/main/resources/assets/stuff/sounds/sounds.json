@@ -1,0 +1,26 @@
+{
+  "mob.blaze.breathe": {
+    "subtitle": "subtitles.mob.blaze.breathe",
+    "sounds": [
+      "blaze/breathe1.ogg",
+      "blaze/breathe2.ogg",
+      "blaze/breathe3.ogg",
+      "blaze/breathe4.ogg"
+    ]
+  },
+  "mob.blaze.hit": {
+    "subtitle": "subtitles.mob.blaze.hit",
+    "sounds": [
+      "blaze/hit1.ogg",
+      "blaze/hit2.ogg",
+      "blaze/hit3.ogg",
+      "blaze/hit4.ogg"
+    ]
+  },
+  "mob.blaze.death": {
+    "subtitle": "subtitles.mob.blaze.death",
+    "sounds": [
+        "blaze/death.ogg"
+    ]
+  }
+}

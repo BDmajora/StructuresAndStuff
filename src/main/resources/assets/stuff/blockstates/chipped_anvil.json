@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "backport:block/chipped_anvil",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "backport:block/chipped_anvil",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "backport:block/chipped_anvil"
+    },
+    "facing=west": {
+      "model": "backport:block/chipped_anvil",
+      "y": 90
+    }
+  }
+}

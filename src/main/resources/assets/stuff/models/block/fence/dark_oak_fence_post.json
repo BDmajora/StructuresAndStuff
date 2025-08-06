@@ -1,0 +1,6 @@
+{
+  "parent": "backport:block/fence_post",
+  "textures": {
+    "texture": "backport:block/dark_oak_planks"
+  }
+}

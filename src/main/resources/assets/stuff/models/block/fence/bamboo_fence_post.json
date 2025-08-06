@@ -1,0 +1,7 @@
+{
+  "parent": "backport:block/custom_fence_post",
+  "textures": {
+    "particle": "backport:block/bamboo_fence_particle",
+    "texture": "backport:block/bamboo_fence"
+  }
+}

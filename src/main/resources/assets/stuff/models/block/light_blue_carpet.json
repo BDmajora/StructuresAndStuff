@@ -1,0 +1,6 @@
+{
+  "parent": "backport:block/carpet",
+  "textures": {
+    "wool": "backport:block/light_blue_wool"
+  }
+}

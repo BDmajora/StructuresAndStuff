@@ -1,0 +1,7 @@
+{
+  "parent": "backport:block/template_campfire",
+  "textures": {
+    "fire": "backport:block/soul_campfire_fire",
+    "lit_log": "backport:block/soul_campfire_log_lit"
+  }
+}
