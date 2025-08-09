@@ -43,7 +43,7 @@ pack_size = 2
 ranged_chance = 4
 # They will ONLY naturally spawn on these blocks
 spawnable_blocks = [
-    "btm:block/fortress_brick"
+    "stuffmod:block/fortress_brick"
 ]
 
 [ mob.cave_spider ]
@@ -72,6 +72,6 @@ spawner_mob = "Blaze"
 # You should be able to put any blocks in here (including any block in BTA + blocks from other BTA mods)
 # If you type the identifier correctly, that is.
 [[ structure.nether_fortress.palettes ]]
-brick = "btm:block/fortress_brick"
-stair = "btm:block/fortress_brick_stairs"
-fence = "btm:block/fortress_brick_fence"
+brick = "stuffmod:block/fortress_brick"
+stair = "stuffmod:block/fortress_brick_stairs"
+fence = "stuffmod:block/fortress_brick_fence"

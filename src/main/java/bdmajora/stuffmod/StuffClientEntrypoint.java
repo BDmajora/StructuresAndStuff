@@ -20,6 +20,6 @@ public class StuffClientEntrypoint implements ClientModInitializer, ClientStartE
 	}
 
 	public void afterClientStart() {
-		SoundRepository.registerNamespace("btm");
+		SoundRepository.registerNamespace("stuffmod");
 	}
 }

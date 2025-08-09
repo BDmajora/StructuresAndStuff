@@ -14,12 +14,12 @@ public class MobInfoRegistrar {
 
 	public static void registerMobInfo() {
 		// Register MobCaveSpider info
-		MobInfoRegistry.register(MobCaveSpider.class, "mob.btm.cave_spider.name", "mob.btm.cave_spider.desc",
+		MobInfoRegistry.register(MobCaveSpider.class, "mob.stuffmod.cave_spider.name", "mob.stuffmod.cave_spider.desc",
 			ModConfig.cave_spider_max_health, ModConfig.cave_spider_score,
 			new MobInfoRegistry.MobDrop[]{new MobInfoRegistry.MobDrop(Items.STRING.getDefaultStack(), 0.66F, 1, 2)});
 
 		// Register MobFortressGuardSkeleton info
-		MobInfoRegistry.register(MobFortressGuardSkeleton.class, "mob.btm.fort_skeleton.name", "mob.btm.fort_skeleton.desc",
+		MobInfoRegistry.register(MobFortressGuardSkeleton.class, "mob.stuffmod.fort_skeleton.name", "mob.stuffmod.fort_skeleton.desc",
 			ModConfig.fort_skeleton_max_health, ModConfig.fort_skeleton_score,
 			new MobInfoRegistry.MobDrop[]{
 				new MobInfoRegistry.MobDrop(new ItemStack(Items.BONE), 0.66F, 1, 2),
@@ -28,7 +28,7 @@ public class MobInfoRegistrar {
 			});
 
 		// Register MobBlaze info
-		MobInfoRegistry.register(MobBlaze.class, "mob.btm.blaze.name", "mob.btm.blaze.desc",
+		MobInfoRegistry.register(MobBlaze.class, "mob.stuffmod.blaze.name", "mob.stuffmod.blaze.desc",
 			ModConfig.blaze_max_health, ModConfig.blaze_score,
 			new MobInfoRegistry.MobDrop[]{new MobInfoRegistry.MobDrop(Blocks.FIRE.asItem().getDefaultStack(), 0.66F, 1, 2)});
 	}

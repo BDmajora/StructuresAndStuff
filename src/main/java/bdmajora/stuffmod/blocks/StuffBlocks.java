@@ -19,7 +19,7 @@ public class StuffBlocks {
 
 	public static void initBlocks() {
 
-		BlockBuilder nether_brick_builder = (new BlockBuilder("btm"))
+		BlockBuilder nether_brick_builder = (new BlockBuilder("stuffmod"))
 			.setHardness(3.0F)
 			.setResistance(10.0F)
 			.addTags(new Tag[]{BlockTags.MINEABLE_BY_PICKAXE});

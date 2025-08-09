@@ -1,0 +1,48 @@
+tile.stuffmod.brick.fortress.name=Fortress Bricks
+tile.stuffmod.brick.fortress.desc=These bricks come from a formidable fortress.
+
+tile.stuffmod.slab.brick.fortress.name=Fortress Brick Slab
+tile.stuffmod.slab.brick.fortress.desc=A slab of Fortress Brick.
+
+tile.stuffmod.stairs.brick.fortress.name=Fortress Brick Stairs
+tile.stuffmod.stairs.brick.fortress.desc=Fortress brick block used for rapid vertical movement.
+
+tile.stuffmod.fence.brick.fortress.name=Fortress Brick Fence
+tile.stuffmod.fence.brick.fortress.desc=A fence made of... bricks? That's odd.
+
+tile.stuffmod.brick.fortress.red.name=Crimson Fortress Bricks
+tile.stuffmod.brick.fortress.red.desc=These red bricks come from a formidable fortress.
+
+tile.stuffmod.slab.brick.fortress.red.name=Crimson Fortress Brick Slab
+tile.stuffmod.slab.brick.fortress.red.desc=A slab of red Fortress Brick.
+
+tile.stuffmod.stairs.brick.fortress.red.name=Crimson Fortress Brick Stairs
+tile.stuffmod.stairs.brick.fortress.red.desc=Red Fortress Brick block used for rapid vertical movement.
+
+tile.stuffmod.fence.brick.fortress.red.name=Crimson Fortress Brick Fence
+tile.stuffmod.fence.brick.fortress.red.desc=A fence made of... red bricks? That's odd.
+
+tile.stuffmod.brick.fortress.black.name=Blackened Fortress Bricks
+tile.stuffmod.brick.fortress.black.desc=These black bricks come from a formidable fortress.
+
+tile.stuffmod.slab.brick.fortress.black.name=Blackened Fortress Brick Slab
+tile.stuffmod.slab.brick.fortress.black.desc=A slab of Black Fortress Brick.
+
+tile.stuffmod.stairs.brick.fortress.black.name=Blackened Fortress Brick Stairs
+tile.stuffmod.stairs.brick.fortress.black.desc=Black Fortress Brick block used for rapid vertical movement.
+
+tile.stuffmod.fence.brick.fortress.black.name=Blackened Fortress Brick Fence
+tile.stuffmod.fence.brick.fortress.black.desc=A fence made of... black bricks? That's odd.
+
+mob.stuffmod.blaze.name=Blaze
+mob.stuffmod.blaze.desc=Blazes are creatures that live inside large fortresses in the Nether. They can shoot fireballs and fly!
+
+mob.stuffmod.cave_spider.name=Cave Spider
+mob.stuffmod.cave_spider.desc=These tiny spiders infest ancient mining sites. Despite their small size, they pack a dangerous bite.
+
+mob.stuffmod.fort_skeleton.name=Fortress Guardian
+mob.stuffmod.fort_skeleton.desc=Blackened skeletons which were cursed to defend an infernal fortress for all eternity.
+
+subtitles.mob.blaze.breathe=Blaze breathes
+subtitles.mob.blaze.hit=Blaze hurt
+subtitles.mob.blaze.death=Blaze dies

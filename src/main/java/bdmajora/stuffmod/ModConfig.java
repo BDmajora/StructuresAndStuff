@@ -97,12 +97,12 @@ public abstract class ModConfig {
 
 	static {
 		try {
-			String f_contents = Resources.toString(ModConfig.class.getResource("/assets/stuff/default_config.toml"), StandardCharsets.UTF_8);
+			String f_contents = Resources.toString(ModConfig.class.getResource("/assets/stuffmod/default_config.toml"), StandardCharsets.UTF_8);
 			dconfig = (CommentedConfig)(new TomlParser()).parse(f_contents);
 		} catch (IOException var1) {
 			throw new RuntimeException(var1);
 		}
 
-		tconfig = FileConfig.builder(MOD_CONFIG_PATH).defaultResource("/assets/stuff/default_config.toml").sync().build();
+		tconfig = FileConfig.builder(MOD_CONFIG_PATH).defaultResource("/assets/stuffmod/default_config.toml").sync().build();
 	}
 }

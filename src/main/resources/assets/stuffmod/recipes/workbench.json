@@ -9,14 +9,14 @@
       {
         "symbol": "G",
         "stack": {
-          "key": "tile.btm.brick.fortress",
+          "key": "tile.stuffmod.brick.fortress",
           "amount": 1,
           "meta": 0
         }
       }
     ],
     "result": {
-      "key": "tile.btm.slab.brick.fortress",
+      "key": "tile.stuffmod.slab.brick.fortress",
       "amount": 6,
       "meta": 0
     },
@@ -34,14 +34,14 @@
       {
         "symbol": "G",
         "stack": {
-          "key": "tile.btm.brick.fortress",
+          "key": "tile.stuffmod.brick.fortress",
           "amount": 1,
           "meta": 0
         }
       }
     ],
     "result": {
-      "key": "tile.btm.stairs.brick.fortress",
+      "key": "tile.stuffmod.stairs.brick.fortress",
       "amount": 6,
       "meta": 0
     },
@@ -58,14 +58,14 @@
       {
         "symbol": "T",
         "stack": {
-          "key": "tile.btm.brick.fortress",
+          "key": "tile.stuffmod.brick.fortress",
           "amount": 1,
           "meta": 0
         }
       }
     ],
     "result": {
-      "key": "tile.btm.fence.brick.fortress",
+      "key": "tile.stuffmod.fence.brick.fortress",
       "amount": 8,
       "meta": 0
     },

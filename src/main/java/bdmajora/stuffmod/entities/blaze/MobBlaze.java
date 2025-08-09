@@ -69,23 +69,23 @@ public class MobBlaze extends MobMonster {
 	}
 
 	public String getEntityTexture() {
-		return ModConfig.blaze_variants ? "/assets/btm/textures/entity/blaze/fire" + this.skin_variant + ".png" : this.getDefaultEntityTexture();
+		return ModConfig.blaze_variants ? "/assets/stuffmod/textures/entity/blaze/fire" + this.skin_variant + ".png" : this.getDefaultEntityTexture();
 	}
 
 	public @NotNull String getDefaultEntityTexture() {
-		return "/assets/btm/textures/entity/blaze/fire0.png";
+		return "/assets/stuffmod/textures/entity/blaze/fire0.png";
 	}
 
 	public String getLivingSound() {
-		return "btm:mob.blaze.breathe";
+		return "stuffmod:mob.blaze.breathe";
 	}
 
 	protected String getHurtSound() {
-		return "btm:mob.blaze.hit";
+		return "stuffmod:mob.blaze.hit";
 	}
 
 	protected String getDeathSound() {
-		return "btm:mob.blaze.death";
+		return "stuffmod:mob.blaze.death";
 	}
 
 	public float getBrightness(float partialTick) {

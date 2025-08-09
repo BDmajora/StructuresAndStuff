@@ -12,7 +12,7 @@ import java.util.Properties;
 
 public class StuffMod implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint {
 	public static final String MOD_ID = "stuffmod";
-	public static final Logger LOGGER = LoggerFactory.getLogger("btm");
+	public static final Logger LOGGER = LoggerFactory.getLogger("stuffmod");
 
 	public StuffMod() {}
 

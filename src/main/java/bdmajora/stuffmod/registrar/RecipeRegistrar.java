@@ -7,7 +7,7 @@ public class RecipeRegistrar {
 
 	public static void registerRecipes() {
 		// Load recipes from the workbench.json file
-		DataLoader.loadRecipesFromFile("/assets/stuff/recipes/workbench.json");
+		DataLoader.loadRecipesFromFile("/assets/stuffmod/recipes/workbench.json");
 
 	}
 }
