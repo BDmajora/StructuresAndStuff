@@ -1,6 +1,7 @@
 package bdmajora.stuffmod.world.overworld.worldGen;
 
 import bdmajora.stuffmod.world.LargeStructureGenerator;
+import bdmajora.stuffmod.world.overworld.worldFeatures.WorldFeatureDirtArmJunction;
 import bdmajora.stuffmod.world.overworld.worldFeatures.WorldFeatureDirtArmNS;
 import bdmajora.stuffmod.world.overworld.worldFeatures.WorldFeatureDirtArmTurn;
 import bdmajora.stuffmod.world.overworld.worldFeatures.WorldFeatureDirtPillar;
@@ -159,6 +160,44 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 			pillarChecks.putIfAbsent(entry.getKey(), entry.getValue());
 		}
 
+		// --- JUNCTION PASS: Place three-way junctions where exactly three cardinal neighbors are connectors ---
+		// Iterate over a snapshot to avoid concurrent modification
+		Map<Long, Integer> checksSnapshot = new HashMap<>(pillarChecks);
+		for (Map.Entry<Long, Integer> entry : checksSnapshot.entrySet()) {
+			long key = entry.getKey();
+			int value = entry.getValue();
+
+			// only consider chunks that are not already a pillar or bridge
+			if (value >= 0) {
+				int chunkX = (int) (key >> 32);
+				int chunkZ = (int) key;
+
+				boolean north = pillarChecks.getOrDefault(chunkKey(chunkX, chunkZ - 1), 0) < 0;
+				boolean south = pillarChecks.getOrDefault(chunkKey(chunkX, chunkZ + 1), 0) < 0;
+				boolean east  = pillarChecks.getOrDefault(chunkKey(chunkX + 1, chunkZ), 0) < 0;
+				boolean west  = pillarChecks.getOrDefault(chunkKey(chunkX - 1, chunkZ), 0) < 0;
+
+				int connectedCount = (north ? 1 : 0) + (south ? 1 : 0) + (east ? 1 : 0) + (west ? 1 : 0);
+
+				if (connectedCount == 3) {
+					int rotation;
+					// rotation mapping per WorldFeatureDirtArmJunction:
+					// 0 = North, South, East
+					// 1 = North, South, West
+					// 2 = North, East, West
+					// 3 = South, East, West
+					if (!west)      rotation = 0; // missing west -> N,S,E
+					else if (!east) rotation = 1; // missing east -> N,S,W
+					else if (!south) rotation = 2; // missing south -> N,E,W
+					else             rotation = 3; // missing north -> S,E,W
+
+					WorldFeatureDirtArmJunction junction = new WorldFeatureDirtArmJunction(rotation);
+					junction.place(world, new Random(), (chunkX << 4) + 8, ARM_Y, (chunkZ << 4) + 8);
+					pillarChecks.put(chunkKey(chunkX, chunkZ), -2); // mark as bridge/junction
+				}
+			}
+		}
+
 		// --- THIRD PASS: Connect bridges to other bridges and pillars ---
 		Map<Long, Integer> bridgesSnapshot = new HashMap<>();
 		for (Map.Entry<Long, Integer> entry : pillarChecks.entrySet()) {
@@ -265,3 +304,4 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 		return (((long) chunkX) << 32) | (chunkZ & 0xffffffffL);
 	}
 }
+
