@@ -70,15 +70,12 @@ public abstract class LargeStructureGenerator {
 	}
 
 	/**
-	 * Subclasses implement this method with specific generation code for each chunk.
-	 *
-	 * @param world        World instance to generate in
-	 * @param chunkX       X coordinate of chunk being processed
-	 * @param chunkZ       Z coordinate of chunk being processed
-	 * @param originChunkX X coordinate where generation started
-	 * @param originChunkZ Z coordinate where generation started
+	 * Default implementation does nothing.
+	 * Subclasses can override for chunk-specific generation logic if needed.
 	 */
-	protected abstract void recursiveGenerate(World world, int chunkX, int chunkZ, int originChunkX, int originChunkZ);
+	protected void recursiveGenerate(World world, int chunkX, int chunkZ, int originChunkX, int originChunkZ) {
+		// Default no-op
+	}
 
 	/**
 	 * Allows changing the generation range at runtime.
