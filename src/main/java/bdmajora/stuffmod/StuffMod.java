@@ -1,6 +1,7 @@
 package bdmajora.stuffmod;
 
 import bdmajora.stuffmod.blocks.StuffBlocks;
+import bdmajora.stuffmod.items.StuffItems;
 import bdmajora.stuffmod.registrar.*;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
