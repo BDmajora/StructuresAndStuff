@@ -1,8 +1,9 @@
 package bdmajora.stuffmod.world.overworld.worldGen;
 
 import bdmajora.stuffmod.world.LargeStructureGenerator;
-import bdmajora.stuffmod.world.overworld.worldFeatures.WorldFeatureDirtPillar;
 import bdmajora.stuffmod.world.overworld.worldFeatures.WorldFeatureDirtArmNS;
+import bdmajora.stuffmod.world.overworld.worldFeatures.WorldFeatureDirtArmTurn;
+import bdmajora.stuffmod.world.overworld.worldFeatures.WorldFeatureDirtPillar;
 import net.minecraft.core.world.World;
 import net.minecraft.core.world.biome.Biome;
 
@@ -20,6 +21,7 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 	private int pillarsGenerated;
 
 	// Map tracking number of times each chunk was checked per world
+	// Values: 0..MAX_CHECKS for normal, -1 = pillar present, -2 = bridge present
 	private static final Map<World, Map<Long, Integer>> worldPillarChecks = new HashMap<>();
 
 	public DirtPillarGenerator() {
@@ -48,7 +50,6 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 		for (int chunkX = originChunkX - range; chunkX <= originChunkX + range; chunkX++) {
 			for (int chunkZ = originChunkZ - range; chunkZ <= originChunkZ + range; chunkZ++) {
 				if (pillarsGenerated >= MAX_PILLARS_PER_GENERATE) {
-					// Stop generating pillars once max reached
 					break;
 				}
 
@@ -56,15 +57,12 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 				int checks = pillarChecks.getOrDefault(key, 0);
 				if (checks >= MAX_CHECKS_PER_CHUNK) continue;
 
-				// Increment checks count for this chunk only for pillars, not arms
 				pillarChecks.put(key, checks + 1);
 
-				// Skip uneven chunks
 				if ((chunkX % 2 != 0) || (chunkZ % 2 != 0)) {
 					continue;
 				}
 
-				// Skip if neighbor has pillar (-1)
 				boolean neighborHasPillar = false;
 				for (int dx = -1; dx <= 1 && !neighborHasPillar; dx++) {
 					for (int dz = -1; dz <= 1 && !neighborHasPillar; dz++) {
@@ -76,10 +74,9 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 				}
 				if (neighborHasPillar) continue;
 
-				// Chance check (deterministic RNG)
 				Random rand = new Random(baseSeed ^ (chunkX * 341873128712L) ^ (chunkZ * 132897987541L));
 				if (rand.nextInt(CHANCE_DENOMINATOR) != 0) {
-					continue; // skip without marking pillar present
+					continue;
 				}
 
 				int blockX = chunkX * 16;
@@ -93,57 +90,139 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 					boolean placed = new WorldFeatureDirtPillar().place(world, new Random(rand.nextLong()), x, y, z);
 					if (placed) {
 						pillarsGenerated++;
-						pillarChecks.put(key, -1); // mark pillar present
+						pillarChecks.put(key, -1); // Mark pillar chunk
 					}
 				}
 			}
 		}
 
-		// --- SECOND PASS: After all pillars generated ---
-		// Connect pillars by checking a 5x5 grid around each pillar chunk for others,
-		// and build arms (bridges) east-west and north-south if gaps between 1 to 5 chunks.
-
+		// --- SECOND PASS: Connect pillars with arms ---
 		WorldFeatureDirtArmNS northSouthArm = new WorldFeatureDirtArmNS();
 
-		// Copy keys of all pillars to avoid concurrent modification
 		Map<Long, Integer> pillarsSnapshot = new HashMap<>();
 		for (Map.Entry<Long, Integer> entry : pillarChecks.entrySet()) {
-			if (entry.getValue() == -1) { // only pillar chunks
+			if (entry.getValue() == -1) {
 				pillarsSnapshot.put(entry.getKey(), entry.getValue());
 			}
 		}
 
+		// Collect bridge chunks to add after iteration to avoid concurrent modification
+		Map<Long, Integer> newBridgeChunks = new HashMap<>();
+
 		for (long key : pillarsSnapshot.keySet()) {
-			int chunkX = (int)(key >> 32);
+			int chunkX = (int) (key >> 32);
 			int chunkZ = (int) key;
 
-			// Search a 5x5 grid around this pillar
 			for (int dx = -5; dx <= 5; dx++) {
 				for (int dz = -5; dz <= 5; dz++) {
-					if (dx == 0 && dz == 0) continue; // skip self
+					if (dx == 0 && dz == 0) continue;
 
 					long neighborKey = chunkKey(chunkX + dx, chunkZ + dz);
 					if (pillarChecks.getOrDefault(neighborKey, 0) == -1) {
 						int gapX = Math.abs(dx) - 1;
 						int gapZ = Math.abs(dz) - 1;
 
-						// Connect east-west gaps 1 to 5 chunks only when dz == 0 (same Z)
+						// East-West gaps (same Z)
 						if (dz == 0 && gapX >= 0 && gapX < 5) {
-							// Place arms between chunkX and chunkX+dx (east-west)
 							int startX = Math.min(chunkX, chunkX + dx) + 1;
 							int endX = Math.max(chunkX, chunkX + dx);
 							for (int fillX = startX; fillX < endX; fillX++) {
 								placeEastWestArmInChunk(world, chunkZ, fillX);
+								newBridgeChunks.put(chunkKey(fillX, chunkZ), -2); // Mark bridge chunk
 							}
 						}
 
-						// Connect north-south gaps 1 to 5 chunks only when dx == 0 (same X)
+						// North-South gaps (same X)
 						if (dx == 0 && gapZ >= 0 && gapZ < 5) {
 							int startZ = Math.min(chunkZ, chunkZ + dz) + 1;
 							int endZ = Math.max(chunkZ, chunkZ + dz);
 							for (int fillZ = startZ; fillZ < endZ; fillZ++) {
 								placeNorthSouthArmInChunk(world, chunkX, fillZ, northSouthArm);
+								newBridgeChunks.put(chunkKey(chunkX, fillZ), -2); // Mark bridge chunk
 							}
+						}
+
+						// Diagonal neighbors: right-angle turns
+						if (gapX == 0 && gapZ == 0 && dx != 0 && dz != 0) {
+							int rotation = determineTurnRotation(dx, dz);
+							WorldFeatureDirtArmTurn turn = new WorldFeatureDirtArmTurn(rotation);
+							placeTurnArmInChunk(world, chunkX + dx, chunkZ + dz, turn);
+							newBridgeChunks.put(chunkKey(chunkX + dx, chunkZ + dz), -2); // Mark bridge chunk
+						}
+					}
+				}
+			}
+		}
+
+		// Add all new bridge chunks after iteration
+		for (Map.Entry<Long, Integer> entry : newBridgeChunks.entrySet()) {
+			pillarChecks.putIfAbsent(entry.getKey(), entry.getValue());
+		}
+
+		// --- THIRD PASS: Connect bridges to other bridges and pillars ---
+		Map<Long, Integer> bridgesSnapshot = new HashMap<>();
+		for (Map.Entry<Long, Integer> entry : pillarChecks.entrySet()) {
+			if (entry.getValue() == -2) {
+				bridgesSnapshot.put(entry.getKey(), entry.getValue());
+			}
+		}
+
+		for (long key : bridgesSnapshot.keySet()) {
+			int chunkX = (int) (key >> 32);
+			int chunkZ = (int) key;
+
+			for (int dx = -5; dx <= 5; dx++) {
+				for (int dz = -5; dz <= 5; dz++) {
+					if (dx == 0 && dz == 0) continue;
+
+					long neighborKey = chunkKey(chunkX + dx, chunkZ + dz);
+
+					// Connect bridge chunks with other bridge chunks
+					if (pillarChecks.getOrDefault(neighborKey, 0) == -2) {
+						int gapX = Math.abs(dx) - 1;
+						int gapZ = Math.abs(dz) - 1;
+
+						if (dz == 0 && gapX >= 0 && gapX < 5) {
+							int startX = Math.min(chunkX, chunkX + dx) + 1;
+							int endX = Math.max(chunkX, chunkX + dx);
+							for (int fillX = startX; fillX < endX; fillX++) {
+								placeEastWestArmInChunk(world, chunkZ, fillX);
+								pillarChecks.putIfAbsent(chunkKey(fillX, chunkZ), -2);
+							}
+						}
+
+						if (dx == 0 && gapZ >= 0 && gapZ < 5) {
+							int startZ = Math.min(chunkZ, chunkZ + dz) + 1;
+							int endZ = Math.max(chunkZ, chunkZ + dz);
+							for (int fillZ = startZ; fillZ < endZ; fillZ++) {
+								placeNorthSouthArmInChunk(world, chunkX, fillZ, northSouthArm);
+								pillarChecks.putIfAbsent(chunkKey(chunkX, fillZ), -2);
+							}
+						}
+
+						if (gapX == 0 && gapZ == 0 && dx != 0 && dz != 0) {
+							int rotation = determineTurnRotation(dx, dz);
+							WorldFeatureDirtArmTurn turn = new WorldFeatureDirtArmTurn(rotation);
+							placeTurnArmInChunk(world, chunkX + dx, chunkZ + dz, turn);
+							pillarChecks.putIfAbsent(neighborKey, -2);
+						}
+					}
+
+					// Connect bridges to adjacent pillars
+					if (pillarChecks.getOrDefault(neighborKey, 0) == -1) {
+						// East-West neighbor?
+						if (dz == 0 && Math.abs(dx) == 1) {
+							placeEastWestArmInChunk(world, chunkZ, chunkX);
+						}
+						// North-South neighbor?
+						if (dx == 0 && Math.abs(dz) == 1) {
+							placeNorthSouthArmInChunk(world, chunkX, chunkZ, northSouthArm);
+						}
+						// Diagonal neighbor?
+						if (Math.abs(dx) == 1 && Math.abs(dz) == 1) {
+							int rotation = determineTurnRotation(dx, dz);
+							WorldFeatureDirtArmTurn turn = new WorldFeatureDirtArmTurn(rotation);
+							placeTurnArmInChunk(world, chunkX, chunkZ, turn);
 						}
 					}
 				}
@@ -151,7 +230,6 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 		}
 	}
 
-	// Places an east-west dirt arm across a chunk at ARM_Y level
 	private void placeEastWestArmInChunk(World world, int chunkZ, int chunkX) {
 		int chunkOriginX = chunkX << 4;
 		int centerZ = (chunkZ << 4) + 8;
@@ -161,13 +239,26 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 		}
 	}
 
-	// Places a north-south dirt arm across a chunk at ARM_Y level using WorldFeatureDirtArmNS
 	private void placeNorthSouthArmInChunk(World world, int chunkX, int chunkZ, WorldFeatureDirtArmNS armFeature) {
 		int centerX = (chunkX << 4) + 8;
 		int chunkOriginZ = chunkZ << 4;
 
-		// The armFeature places dirt blocks from north to south across the chunk center line
 		armFeature.place(world, new Random(), centerX, ARM_Y, chunkOriginZ + 8);
+	}
+
+	private void placeTurnArmInChunk(World world, int chunkX, int chunkZ, WorldFeatureDirtArmTurn turnFeature) {
+		int centerX = (chunkX << 4) + 8;
+		int centerZ = (chunkZ << 4) + 8;
+
+		turnFeature.place(world, new Random(), centerX, ARM_Y, centerZ);
+	}
+
+	private int determineTurnRotation(int dx, int dz) {
+		if (dx == 1 && dz == 1) return 0;  // East then South
+		if (dx == 1 && dz == -1) return 3; // North then East
+		if (dx == -1 && dz == -1) return 2; // West then North
+		if (dx == -1 && dz == 1) return 1;  // South then West
+		return 0;
 	}
 
 	private long chunkKey(int chunkX, int chunkZ) {
