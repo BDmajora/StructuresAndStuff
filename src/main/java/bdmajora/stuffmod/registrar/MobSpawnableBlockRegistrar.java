@@ -3,6 +3,7 @@ package bdmajora.stuffmod.registrar;
 import bdmajora.stuffmod.ModConfig;
 import bdmajora.stuffmod.Util;
 import bdmajora.stuffmod.blocks.ModBlockTags;
+import net.minecraft.core.block.Blocks;
 
 import java.util.Iterator;
 import java.util.List;

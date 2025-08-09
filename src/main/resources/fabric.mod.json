@@ -29,6 +29,12 @@
 		],
 		"recipesReady": [
 			"bdmajora.stuffmod.StuffMod"
+		],
+		"initModels": [
+			"bdmajora.stuffmod.StuffModelEntrypoint"
+		],
+		"afterClientStart": [
+			"bdmajora.stuffmod.StuffClientEntrypoint"
 		]
 	},
   "mixins": [

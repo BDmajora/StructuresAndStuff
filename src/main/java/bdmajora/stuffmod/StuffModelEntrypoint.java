@@ -14,9 +14,9 @@ import net.minecraft.client.render.block.model.BlockModelDispatcher;
 import net.minecraft.client.render.item.model.ItemModelDispatcher;
 import turniplabs.halplibe.util.ModelEntrypoint;
 
-public class BTMModelEntrypoint implements ModelEntrypoint {
+public class StuffModelEntrypoint implements ModelEntrypoint {
 
-	public BTMModelEntrypoint() {
+	public StuffModelEntrypoint() {
 	}
 
 	public void initBlockModels(BlockModelDispatcher dispatcher) {
