@@ -1,5 +1,8 @@
 package bdmajora.stuffmod.mixin;
 
+import bdmajora.stuffmod.world.nether.blockPicking.netherFortress.FortressBlocks;
+import bdmajora.stuffmod.world.nether.worldGen.netherFortress.NetherFortressGenLogic;
+import bdmajora.stuffmod.world.nether.worldGen.netherFortress.NetherFortressGenerator;
 import bdmajora.stuffmod.world.overworld.worldGen.DirtPillarGenLogic;
 import bdmajora.stuffmod.world.overworld.worldGen.DirtPillarGenerator;
 import net.minecraft.core.world.World;
@@ -22,25 +25,35 @@ public abstract class MixinChunkGenerator {
 	@Shadow @Final
 	protected World world;
 
-	// Reuse the generator instance for efficiency
-	private final DirtPillarGenerator generator = new DirtPillarGenerator();
+	// Reuse generator instances for efficiency
+	private final DirtPillarGenerator dirtPillarGenerator = new DirtPillarGenerator();
+	private final NetherFortressGenerator netherFortressGenerator =
+		new NetherFortressGenerator(FortressBlocks.DEFAULT);
 
 	@Inject(method = "decorate", at = @At("TAIL"))
-	private void injectDirtPillars(Chunk chunk, CallbackInfo ci) {
+	private void injectCustomStructures(Chunk chunk, CallbackInfo ci) {
+		IChunkProvider chunkProvider = world.getChunkProvider();
+		int originChunkX = chunk.xPosition;
+		int originChunkZ = chunk.zPosition;
+
+		// Overworld dirt pillars
 		if (isOverworldGenerator()) {
 			if (!DirtPillarGenLogic.shouldGenerate(world)) {
 				return; // skip most of the time
 			}
-
-			IChunkProvider chunkProvider = world.getChunkProvider();
-
-			int originChunkX = chunk.xPosition;
-			int originChunkZ = chunk.zPosition;
-
-			generator.generate(chunkProvider, world, originChunkX, originChunkZ);
+			dirtPillarGenerator.generate(chunkProvider, world, originChunkX, originChunkZ);
 		}
-	}
 
+		// Nether fortress
+		if (isNetherGenerator()) {
+			if (!NetherFortressGenLogic.shouldGenerate(world, originChunkX, originChunkZ, NetherFortressGenerator.CHANCE_DENOMINATOR)) {
+				return; // skip most of the time
+			}
+			netherFortressGenerator.generate(chunkProvider, world, originChunkX, originChunkZ);
+		}
+
+
+	}
 
 	@Unique
 	private boolean isOverworldGenerator() {
@@ -48,7 +61,6 @@ public abstract class MixinChunkGenerator {
 	}
 
 	@Unique
-	@SuppressWarnings("unused")
 	private boolean isNetherGenerator() {
 		return (Object) this instanceof ChunkGeneratorNether;
 	}

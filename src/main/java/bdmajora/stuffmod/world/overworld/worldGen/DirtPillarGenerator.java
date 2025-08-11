@@ -1,7 +1,6 @@
 package bdmajora.stuffmod.world.overworld.worldGen;
 
 import bdmajora.stuffmod.world.LargeStructureGenerator;
-import bdmajora.stuffmod.world.overworld.worldFeatures.WorldFeatureDirtArmJunction;
 import bdmajora.stuffmod.world.overworld.worldFeatures.WorldFeatureDirtArmNS;
 import bdmajora.stuffmod.world.overworld.worldFeatures.WorldFeatureDirtArmTurn;
 import bdmajora.stuffmod.world.overworld.worldFeatures.WorldFeatureDirtPillar;
@@ -45,26 +44,25 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 		Map<Long, Integer> pillarChecks = worldPillarChecks.get(world);
 
 		long baseSeed = world.getRandomSeed();
-
-		// deterministic RNG for this origin chunk (keeps behavior reproducible)
 		Random rand = new Random(baseSeed ^ ((long) originChunkX * 341873128712L) ^ ((long) originChunkZ * 132897987541L));
 
-		// respect per-chunk check limit like before for the origin
 		long originKey = chunkKey(originChunkX, originChunkZ);
 		int checks = pillarChecks.getOrDefault(originKey, 0);
 		if (checks >= MAX_CHECKS_PER_CHUNK) return;
 		pillarChecks.put(originKey, checks + 1);
 
-		// keep the same spawn-chance gate (CHANCE_DENOMINATOR)
 		if (rand.nextInt(CHANCE_DENOMINATOR) != 0) {
 			return;
 		}
 
-		// Decide how many pillars this single connected structure will have (5-7)
-		int targetPillars = 5 + rand.nextInt(3);
+		// Decide how many pillars to place this run (random but capped by MAX_PILLARS_PER_GENERATE)
+		int minPillars = Math.min(MAX_PILLARS_PER_GENERATE, 5);
+		int maxExtra = Math.max(0, MAX_PILLARS_PER_GENERATE - minPillars);
+		int targetPillars = minPillars + (maxExtra > 0 ? rand.nextInt(maxExtra + 1) : 0);
+
 		int placedPillars = 0;
 
-		// Place the first pillar in the origin chunk (center-ish)
+		// Place the first pillar
 		int x = originChunkX * 16 + 8;
 		int z = originChunkZ * 16 + 8;
 		int y = world.getHeightValue(x, z);
@@ -77,22 +75,18 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 
 		pillarsGenerated++;
 		placedPillars++;
-		pillarChecks.put(originKey, -1); // mark pillar chunk
+		pillarChecks.put(originKey, -1);
 
-		// Keep a tiny local set of chunks used by THIS structure
 		java.util.HashSet<Long> localUsed = new java.util.HashSet<>();
 		localUsed.add(originKey);
 
-		// arm feature instance used for north-south arms
 		WorldFeatureDirtArmNS northSouthArm = new WorldFeatureDirtArmNS();
 
 		int currentChunkX = originChunkX;
 		int currentChunkZ = originChunkZ;
-		// track previous direction to avoid immediate backtracking
 		int previousDir = -1; // -1 = none, 0=N,1=E,2=S,3=W
 
 		while (placedPillars < targetPillars) {
-			// gather all valid (dir, length) options
 			java.util.ArrayList<int[]> validOptions = new java.util.ArrayList<>();
 			for (int dir = 0; dir < 4; dir++) {
 				if (previousDir != -1 && ((previousDir + 2) % 4) == dir) continue;
@@ -128,12 +122,11 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 					}
 					if (pathBlocked) continue;
 
-					// biome check at exact aligned location
 					int tx, tz;
-					if (dir == 0 || dir == 2) { // N/S -> keep X constant
+					if (dir == 0 || dir == 2) { // N/S
 						tx = currentChunkX * 16 + 8;
 						tz = targetChunkZ * 16 + 8;
-					} else { // E/W -> keep Z constant
+					} else {
 						tx = targetChunkX * 16 + 8;
 						tz = currentChunkZ * 16 + 8;
 					}
@@ -160,18 +153,16 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 			int targetChunkZ = currentChunkZ + dz * lengthChunks;
 			long targetKey = chunkKey(targetChunkX, targetChunkZ);
 
-			// exact aligned pillar coords
 			int tx, tz;
-			if (dir == 0 || dir == 2) { // N/S
+			if (dir == 0 || dir == 2) {
 				tx = currentChunkX * 16 + 8;
 				tz = targetChunkZ * 16 + 8;
-			} else { // E/W
+			} else {
 				tx = targetChunkX * 16 + 8;
 				tz = currentChunkZ * 16 + 8;
 			}
 			int ty = world.getHeightValue(tx, tz);
 
-			// place bridges in a perfectly straight line
 			for (int i = 1; i <= lengthChunks; i++) {
 				int midChunkX = currentChunkX + dx * i;
 				int midChunkZ = currentChunkZ + dz * i;
@@ -200,12 +191,9 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 		}
 	}
 
-
-
 	private void placeEastWestArmInChunk(World world, int chunkZ, int chunkX) {
 		int chunkOriginX = chunkX << 4;
 		int centerZ = (chunkZ << 4) + 8;
-
 		for (int dx = 0; dx < 16; dx++) {
 			world.setBlockAndMetadataWithNotify(chunkOriginX + dx, ARM_Y, centerZ, 220, 0);
 		}
@@ -214,27 +202,16 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 	private void placeNorthSouthArmInChunk(World world, int chunkX, int chunkZ, WorldFeatureDirtArmNS armFeature) {
 		int centerX = (chunkX << 4) + 8;
 		int chunkOriginZ = chunkZ << 4;
-
 		armFeature.place(world, new Random(), centerX, ARM_Y, chunkOriginZ + 8);
 	}
 
 	private void placeTurnArmInChunk(World world, int chunkX, int chunkZ, WorldFeatureDirtArmTurn turnFeature) {
 		int centerX = (chunkX << 4) + 8;
 		int centerZ = (chunkZ << 4) + 8;
-
 		turnFeature.place(world, new Random(), centerX, ARM_Y, centerZ);
-	}
-
-	private int determineTurnRotation(int dx, int dz) {
-		if (dx == 1 && dz == 1) return 0;  // East then South
-		if (dx == 1 && dz == -1) return 3; // North then East
-		if (dx == -1 && dz == -1) return 2; // West then North
-		if (dx == -1 && dz == 1) return 1;  // South then West
-		return 0;
 	}
 
 	private long chunkKey(int chunkX, int chunkZ) {
 		return (((long) chunkX) << 32) | (chunkZ & 0xffffffffL);
 	}
 }
-
