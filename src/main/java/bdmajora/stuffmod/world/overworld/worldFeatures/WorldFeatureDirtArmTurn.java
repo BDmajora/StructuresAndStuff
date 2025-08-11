@@ -1,12 +1,13 @@
 package bdmajora.stuffmod.world.overworld.worldFeatures;
 
+import bdmajora.stuffmod.world.overworld.blockPickRand.RandomPillarBlockPicker;
 import net.minecraft.core.world.World;
 import net.minecraft.core.world.generate.feature.WorldFeature;
 
 import java.util.Random;
 
 /**
- * Places an L-shaped dirt arm (right angle) at ARM_Y level.
+ * Places an L-shaped arm (right angle) at ARM_Y level.
  * The arm extends from the chunk center to edges along two perpendicular directions.
  * Rotation values:
  * 0 = East then South
@@ -38,49 +39,44 @@ public class WorldFeatureDirtArmTurn extends WorldFeature {
 		int centerX = chunkX + 8;
 		int centerZ = chunkZ + 8;
 
+		// Pick a random block ID for the entire L-shape
+		int blockId = RandomPillarBlockPicker.getRandomBlock(random);
+
 		// Based on rotation, place the arms
 		switch (rotation) {
 			case 0: // East then South
-				// East arm: from center to east edge
 				for (int dx = 0; dx < 8; dx++) {
-					world.setBlockAndMetadataWithNotify(centerX + dx, ARM_Y, centerZ, 220, 0);
+					world.setBlockAndMetadataWithNotify(centerX + dx, ARM_Y, centerZ, blockId, 0);
 				}
-				// South arm: from center to south edge
 				for (int dz = 0; dz < 8; dz++) {
-					world.setBlockAndMetadataWithNotify(centerX, ARM_Y, centerZ + dz, 220, 0);
+					world.setBlockAndMetadataWithNotify(centerX, ARM_Y, centerZ + dz, blockId, 0);
 				}
 				break;
 
 			case 1: // South then West
-				// South arm: from center to south edge
 				for (int dz = 0; dz < 8; dz++) {
-					world.setBlockAndMetadataWithNotify(centerX, ARM_Y, centerZ + dz, 220, 0);
+					world.setBlockAndMetadataWithNotify(centerX, ARM_Y, centerZ + dz, blockId, 0);
 				}
-				// West arm: from center to west edge
 				for (int dx = 0; dx < 8; dx++) {
-					world.setBlockAndMetadataWithNotify(centerX - dx, ARM_Y, centerZ, 220, 0);
+					world.setBlockAndMetadataWithNotify(centerX - dx, ARM_Y, centerZ, blockId, 0);
 				}
 				break;
 
 			case 2: // West then North
-				// West arm: from center to west edge
 				for (int dx = 0; dx < 8; dx++) {
-					world.setBlockAndMetadataWithNotify(centerX - dx, ARM_Y, centerZ, 220, 0);
+					world.setBlockAndMetadataWithNotify(centerX - dx, ARM_Y, centerZ, blockId, 0);
 				}
-				// North arm: from center to north edge
 				for (int dz = 0; dz < 8; dz++) {
-					world.setBlockAndMetadataWithNotify(centerX, ARM_Y, centerZ - dz, 220, 0);
+					world.setBlockAndMetadataWithNotify(centerX, ARM_Y, centerZ - dz, blockId, 0);
 				}
 				break;
 
 			case 3: // North then East
-				// North arm: from center to north edge
 				for (int dz = 0; dz < 8; dz++) {
-					world.setBlockAndMetadataWithNotify(centerX, ARM_Y, centerZ - dz, 220, 0);
+					world.setBlockAndMetadataWithNotify(centerX, ARM_Y, centerZ - dz, blockId, 0);
 				}
-				// East arm: from center to east edge
 				for (int dx = 0; dx < 8; dx++) {
-					world.setBlockAndMetadataWithNotify(centerX + dx, ARM_Y, centerZ, 220, 0);
+					world.setBlockAndMetadataWithNotify(centerX + dx, ARM_Y, centerZ, blockId, 0);
 				}
 				break;
 		}

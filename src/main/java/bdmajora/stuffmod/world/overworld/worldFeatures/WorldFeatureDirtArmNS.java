@@ -1,5 +1,6 @@
 package bdmajora.stuffmod.world.overworld.worldFeatures;
 
+import bdmajora.stuffmod.world.overworld.blockPickRand.RandomPillarBlockPicker;
 import net.minecraft.core.world.World;
 import net.minecraft.core.world.generate.feature.WorldFeature;
 
@@ -22,10 +23,13 @@ public class WorldFeatureDirtArmNS extends WorldFeature {
 		int centerX = chunkX + 8;
 		int centerZ = chunkZ + 8;
 
-		// Place dirt blocks from north edge to south edge of chunk
+		// Pick a random block ID for the entire arm
+		int blockId = RandomPillarBlockPicker.getRandomBlock(random);
+
+		// Place blocks from north edge to south edge of chunk
 		for (int dz = 0; dz < 16; dz++) {
 			int currentZ = chunkZ + dz;
-			world.setBlockAndMetadataWithNotify(centerX, ARM_Y, currentZ, 220, 0);
+			world.setBlockAndMetadataWithNotify(centerX, ARM_Y, currentZ, blockId, 0);
 		}
 
 		return true;

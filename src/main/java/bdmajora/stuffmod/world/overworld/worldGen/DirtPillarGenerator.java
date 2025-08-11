@@ -46,228 +46,161 @@ public class DirtPillarGenerator extends LargeStructureGenerator {
 
 		long baseSeed = world.getRandomSeed();
 
-		// --- FIRST PASS: Generate only pillars and mark them with -1 ---
+		// deterministic RNG for this origin chunk (keeps behavior reproducible)
+		Random rand = new Random(baseSeed ^ ((long) originChunkX * 341873128712L) ^ ((long) originChunkZ * 132897987541L));
 
-		for (int chunkX = originChunkX - range; chunkX <= originChunkX + range; chunkX++) {
-			for (int chunkZ = originChunkZ - range; chunkZ <= originChunkZ + range; chunkZ++) {
-				if (pillarsGenerated >= MAX_PILLARS_PER_GENERATE) {
-					break;
-				}
+		// respect per-chunk check limit like before for the origin
+		long originKey = chunkKey(originChunkX, originChunkZ);
+		int checks = pillarChecks.getOrDefault(originKey, 0);
+		if (checks >= MAX_CHECKS_PER_CHUNK) return;
+		pillarChecks.put(originKey, checks + 1);
 
-				long key = chunkKey(chunkX, chunkZ);
-				int checks = pillarChecks.getOrDefault(key, 0);
-				if (checks >= MAX_CHECKS_PER_CHUNK) continue;
-
-				pillarChecks.put(key, checks + 1);
-
-				if ((chunkX % 2 != 0) || (chunkZ % 2 != 0)) {
-					continue;
-				}
-
-				boolean neighborHasPillar = false;
-				for (int dx = -1; dx <= 1 && !neighborHasPillar; dx++) {
-					for (int dz = -1; dz <= 1 && !neighborHasPillar; dz++) {
-						long neighborKey = chunkKey(chunkX + dx, chunkZ + dz);
-						if (pillarChecks.getOrDefault(neighborKey, 0) == -1) {
-							neighborHasPillar = true;
-						}
-					}
-				}
-				if (neighborHasPillar) continue;
-
-				Random rand = new Random(baseSeed ^ (chunkX * 341873128712L) ^ (chunkZ * 132897987541L));
-				if (rand.nextInt(CHANCE_DENOMINATOR) != 0) {
-					continue;
-				}
-
-				int blockX = chunkX * 16;
-				int blockZ = chunkZ * 16;
-				int x = blockX + rand.nextInt(16) + 8;
-				int z = blockZ + rand.nextInt(16) + 8;
-				int y = world.getHeightValue(x, z);
-
-				Biome biome = world.getBlockBiome(x, y, z);
-				if (!biome.hasSurfaceSnow()) {
-					boolean placed = new WorldFeatureDirtPillar().place(world, new Random(rand.nextLong()), x, y, z);
-					if (placed) {
-						pillarsGenerated++;
-						pillarChecks.put(key, -1); // Mark pillar chunk
-					}
-				}
-			}
+		// keep the same spawn-chance gate (CHANCE_DENOMINATOR)
+		if (rand.nextInt(CHANCE_DENOMINATOR) != 0) {
+			return;
 		}
 
-		// --- SECOND PASS: Connect pillars with arms ---
+		// Decide how many pillars this single connected structure will have (5-7)
+		int targetPillars = 5 + rand.nextInt(3);
+		int placedPillars = 0;
+
+		// Place the first pillar in the origin chunk (center-ish)
+		int x = originChunkX * 16 + 8;
+		int z = originChunkZ * 16 + 8;
+		int y = world.getHeightValue(x, z);
+
+		Biome biome = world.getBlockBiome(x, y, z);
+		if (biome.hasSurfaceSnow()) return;
+
+		boolean firstPlaced = new WorldFeatureDirtPillar().place(world, new Random(rand.nextLong()), x, y, z);
+		if (!firstPlaced) return;
+
+		pillarsGenerated++;
+		placedPillars++;
+		pillarChecks.put(originKey, -1); // mark pillar chunk
+
+		// Keep a tiny local set of chunks used by THIS structure
+		java.util.HashSet<Long> localUsed = new java.util.HashSet<>();
+		localUsed.add(originKey);
+
+		// arm feature instance used for north-south arms
 		WorldFeatureDirtArmNS northSouthArm = new WorldFeatureDirtArmNS();
 
-		Map<Long, Integer> pillarsSnapshot = new HashMap<>();
-		for (Map.Entry<Long, Integer> entry : pillarChecks.entrySet()) {
-			if (entry.getValue() == -1) {
-				pillarsSnapshot.put(entry.getKey(), entry.getValue());
-			}
-		}
+		int currentChunkX = originChunkX;
+		int currentChunkZ = originChunkZ;
+		// track previous direction to avoid immediate backtracking
+		int previousDir = -1; // -1 = none, 0=N,1=E,2=S,3=W
 
-		// Collect bridge chunks to add after iteration to avoid concurrent modification
-		Map<Long, Integer> newBridgeChunks = new HashMap<>();
+		while (placedPillars < targetPillars) {
+			// gather all valid (dir, length) options
+			java.util.ArrayList<int[]> validOptions = new java.util.ArrayList<>();
+			for (int dir = 0; dir < 4; dir++) {
+				if (previousDir != -1 && ((previousDir + 2) % 4) == dir) continue;
 
-		for (long key : pillarsSnapshot.keySet()) {
-			int chunkX = (int) (key >> 32);
-			int chunkZ = (int) key;
+				int dx = 0, dz = 0;
+				if (dir == 0) dz = -1;
+				else if (dir == 1) dx = 1;
+				else if (dir == 2) dz = 1;
+				else dx = -1;
 
-			for (int dx = -5; dx <= 5; dx++) {
-				for (int dz = -5; dz <= 5; dz++) {
-					if (dx == 0 && dz == 0) continue;
+				for (int lengthChunks = 1; lengthChunks <= 3; lengthChunks++) {
+					int targetChunkX = currentChunkX + dx * lengthChunks;
+					int targetChunkZ = currentChunkZ + dz * lengthChunks;
+					long targetKey = chunkKey(targetChunkX, targetChunkZ);
 
-					long neighborKey = chunkKey(chunkX + dx, chunkZ + dz);
-					if (pillarChecks.getOrDefault(neighborKey, 0) == -1) {
-						int gapX = Math.abs(dx) - 1;
-						int gapZ = Math.abs(dz) - 1;
+					if (pillarChecks.getOrDefault(targetKey, 0) < 0) continue;
+					if (localUsed.contains(targetKey)) continue;
+					if (pillarChecks.getOrDefault(targetKey, 0) >= MAX_CHECKS_PER_CHUNK) continue;
 
-						// East-West gaps (same Z)
-						if (dz == 0 && gapX >= 0 && gapX < 5) {
-							int startX = Math.min(chunkX, chunkX + dx) + 1;
-							int endX = Math.max(chunkX, chunkX + dx);
-							for (int fillX = startX; fillX < endX; fillX++) {
-								placeEastWestArmInChunk(world, chunkZ, fillX);
-								newBridgeChunks.put(chunkKey(fillX, chunkZ), -2); // Mark bridge chunk
-							}
+					boolean pathBlocked = false;
+					for (int i = 1; i <= lengthChunks; i++) {
+						int midX = currentChunkX + dx * i;
+						int midZ = currentChunkZ + dz * i;
+						long midKey = chunkKey(midX, midZ);
+						if (pillarChecks.getOrDefault(midKey, 0) == -1) {
+							pathBlocked = true;
+							break;
 						}
-
-						// North-South gaps (same X)
-						if (dx == 0 && gapZ >= 0 && gapZ < 5) {
-							int startZ = Math.min(chunkZ, chunkZ + dz) + 1;
-							int endZ = Math.max(chunkZ, chunkZ + dz);
-							for (int fillZ = startZ; fillZ < endZ; fillZ++) {
-								placeNorthSouthArmInChunk(world, chunkX, fillZ, northSouthArm);
-								newBridgeChunks.put(chunkKey(chunkX, fillZ), -2); // Mark bridge chunk
-							}
-						}
-
-						// Diagonal neighbors: right-angle turns
-						if (gapX == 0 && gapZ == 0 && dx != 0 && dz != 0) {
-							int rotation = determineTurnRotation(dx, dz);
-							WorldFeatureDirtArmTurn turn = new WorldFeatureDirtArmTurn(rotation);
-							placeTurnArmInChunk(world, chunkX + dx, chunkZ + dz, turn);
-							newBridgeChunks.put(chunkKey(chunkX + dx, chunkZ + dz), -2); // Mark bridge chunk
+						if (localUsed.contains(midKey)) {
+							pathBlocked = true;
+							break;
 						}
 					}
-				}
-			}
-		}
+					if (pathBlocked) continue;
 
-		// Add all new bridge chunks after iteration
-		for (Map.Entry<Long, Integer> entry : newBridgeChunks.entrySet()) {
-			pillarChecks.putIfAbsent(entry.getKey(), entry.getValue());
-		}
-
-		// --- JUNCTION PASS: Place three-way junctions where exactly three cardinal neighbors are connectors ---
-		// Iterate over a snapshot to avoid concurrent modification
-		Map<Long, Integer> checksSnapshot = new HashMap<>(pillarChecks);
-		for (Map.Entry<Long, Integer> entry : checksSnapshot.entrySet()) {
-			long key = entry.getKey();
-			int value = entry.getValue();
-
-			// only consider chunks that are not already a pillar or bridge
-			if (value >= 0) {
-				int chunkX = (int) (key >> 32);
-				int chunkZ = (int) key;
-
-				boolean north = pillarChecks.getOrDefault(chunkKey(chunkX, chunkZ - 1), 0) < 0;
-				boolean south = pillarChecks.getOrDefault(chunkKey(chunkX, chunkZ + 1), 0) < 0;
-				boolean east  = pillarChecks.getOrDefault(chunkKey(chunkX + 1, chunkZ), 0) < 0;
-				boolean west  = pillarChecks.getOrDefault(chunkKey(chunkX - 1, chunkZ), 0) < 0;
-
-				int connectedCount = (north ? 1 : 0) + (south ? 1 : 0) + (east ? 1 : 0) + (west ? 1 : 0);
-
-				if (connectedCount == 3) {
-					int rotation;
-					// rotation mapping per WorldFeatureDirtArmJunction:
-					// 0 = North, South, East
-					// 1 = North, South, West
-					// 2 = North, East, West
-					// 3 = South, East, West
-					if (!west)      rotation = 0; // missing west -> N,S,E
-					else if (!east) rotation = 1; // missing east -> N,S,W
-					else if (!south) rotation = 2; // missing south -> N,E,W
-					else             rotation = 3; // missing north -> S,E,W
-
-					WorldFeatureDirtArmJunction junction = new WorldFeatureDirtArmJunction(rotation);
-					junction.place(world, new Random(), (chunkX << 4) + 8, ARM_Y, (chunkZ << 4) + 8);
-					pillarChecks.put(chunkKey(chunkX, chunkZ), -2); // mark as bridge/junction
-				}
-			}
-		}
-
-		// --- THIRD PASS: Connect bridges to other bridges and pillars ---
-		Map<Long, Integer> bridgesSnapshot = new HashMap<>();
-		for (Map.Entry<Long, Integer> entry : pillarChecks.entrySet()) {
-			if (entry.getValue() == -2) {
-				bridgesSnapshot.put(entry.getKey(), entry.getValue());
-			}
-		}
-
-		for (long key : bridgesSnapshot.keySet()) {
-			int chunkX = (int) (key >> 32);
-			int chunkZ = (int) key;
-
-			for (int dx = -5; dx <= 5; dx++) {
-				for (int dz = -5; dz <= 5; dz++) {
-					if (dx == 0 && dz == 0) continue;
-
-					long neighborKey = chunkKey(chunkX + dx, chunkZ + dz);
-
-					// Connect bridge chunks with other bridge chunks
-					if (pillarChecks.getOrDefault(neighborKey, 0) == -2) {
-						int gapX = Math.abs(dx) - 1;
-						int gapZ = Math.abs(dz) - 1;
-
-						if (dz == 0 && gapX >= 0 && gapX < 5) {
-							int startX = Math.min(chunkX, chunkX + dx) + 1;
-							int endX = Math.max(chunkX, chunkX + dx);
-							for (int fillX = startX; fillX < endX; fillX++) {
-								placeEastWestArmInChunk(world, chunkZ, fillX);
-								pillarChecks.putIfAbsent(chunkKey(fillX, chunkZ), -2);
-							}
-						}
-
-						if (dx == 0 && gapZ >= 0 && gapZ < 5) {
-							int startZ = Math.min(chunkZ, chunkZ + dz) + 1;
-							int endZ = Math.max(chunkZ, chunkZ + dz);
-							for (int fillZ = startZ; fillZ < endZ; fillZ++) {
-								placeNorthSouthArmInChunk(world, chunkX, fillZ, northSouthArm);
-								pillarChecks.putIfAbsent(chunkKey(chunkX, fillZ), -2);
-							}
-						}
-
-						if (gapX == 0 && gapZ == 0 && dx != 0 && dz != 0) {
-							int rotation = determineTurnRotation(dx, dz);
-							WorldFeatureDirtArmTurn turn = new WorldFeatureDirtArmTurn(rotation);
-							placeTurnArmInChunk(world, chunkX + dx, chunkZ + dz, turn);
-							pillarChecks.putIfAbsent(neighborKey, -2);
-						}
+					// biome check at exact aligned location
+					int tx, tz;
+					if (dir == 0 || dir == 2) { // N/S -> keep X constant
+						tx = currentChunkX * 16 + 8;
+						tz = targetChunkZ * 16 + 8;
+					} else { // E/W -> keep Z constant
+						tx = targetChunkX * 16 + 8;
+						tz = currentChunkZ * 16 + 8;
 					}
+					int ty = world.getHeightValue(tx, tz);
+					Biome tBiome = world.getBlockBiome(tx, ty, tz);
+					if (tBiome.hasSurfaceSnow()) continue;
 
-					// Connect bridges to adjacent pillars
-					if (pillarChecks.getOrDefault(neighborKey, 0) == -1) {
-						// East-West neighbor?
-						if (dz == 0 && Math.abs(dx) == 1) {
-							placeEastWestArmInChunk(world, chunkZ, chunkX);
-						}
-						// North-South neighbor?
-						if (dx == 0 && Math.abs(dz) == 1) {
-							placeNorthSouthArmInChunk(world, chunkX, chunkZ, northSouthArm);
-						}
-						// Diagonal neighbor?
-						if (Math.abs(dx) == 1 && Math.abs(dz) == 1) {
-							int rotation = determineTurnRotation(dx, dz);
-							WorldFeatureDirtArmTurn turn = new WorldFeatureDirtArmTurn(rotation);
-							placeTurnArmInChunk(world, chunkX, chunkZ, turn);
-						}
-					}
+					validOptions.add(new int[]{dir, lengthChunks});
 				}
 			}
+
+			if (validOptions.isEmpty()) break;
+
+			int[] choice = validOptions.get(rand.nextInt(validOptions.size()));
+			int dir = choice[0];
+			int lengthChunks = choice[1];
+			int dx = 0, dz = 0;
+			if (dir == 0) dz = -1;
+			else if (dir == 1) dx = 1;
+			else if (dir == 2) dz = 1;
+			else dx = -1;
+
+			int targetChunkX = currentChunkX + dx * lengthChunks;
+			int targetChunkZ = currentChunkZ + dz * lengthChunks;
+			long targetKey = chunkKey(targetChunkX, targetChunkZ);
+
+			// exact aligned pillar coords
+			int tx, tz;
+			if (dir == 0 || dir == 2) { // N/S
+				tx = currentChunkX * 16 + 8;
+				tz = targetChunkZ * 16 + 8;
+			} else { // E/W
+				tx = targetChunkX * 16 + 8;
+				tz = currentChunkZ * 16 + 8;
+			}
+			int ty = world.getHeightValue(tx, tz);
+
+			// place bridges in a perfectly straight line
+			for (int i = 1; i <= lengthChunks; i++) {
+				int midChunkX = currentChunkX + dx * i;
+				int midChunkZ = currentChunkZ + dz * i;
+				long midKey = chunkKey(midChunkX, midChunkZ);
+
+				if (dx != 0) {
+					placeEastWestArmInChunk(world, midChunkZ, midChunkX);
+				} else {
+					placeNorthSouthArmInChunk(world, midChunkX, midChunkZ, northSouthArm);
+				}
+				pillarChecks.putIfAbsent(midKey, -2);
+				localUsed.add(midKey);
+			}
+
+			boolean placed = new WorldFeatureDirtPillar().place(world, new Random(rand.nextLong()), tx, ty, tz);
+			if (!placed) break;
+
+			pillarChecks.put(targetKey, -1);
+			localUsed.add(targetKey);
+			pillarsGenerated++;
+			placedPillars++;
+
+			currentChunkX = targetChunkX;
+			currentChunkZ = targetChunkZ;
+			previousDir = dir;
 		}
 	}
+
+
 
 	private void placeEastWestArmInChunk(World world, int chunkZ, int chunkX) {
 		int chunkOriginX = chunkX << 4;

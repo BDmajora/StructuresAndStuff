@@ -1,5 +1,6 @@
 package bdmajora.stuffmod.mixin;
 
+import bdmajora.stuffmod.world.overworld.worldGen.DirtPillarGenLogic;
 import bdmajora.stuffmod.world.overworld.worldGen.DirtPillarGenerator;
 import net.minecraft.core.world.World;
 import net.minecraft.core.world.chunk.Chunk;
@@ -27,6 +28,10 @@ public abstract class MixinChunkGenerator {
 	@Inject(method = "decorate", at = @At("TAIL"))
 	private void injectDirtPillars(Chunk chunk, CallbackInfo ci) {
 		if (isOverworldGenerator()) {
+			if (!DirtPillarGenLogic.shouldGenerate(world)) {
+				return; // skip most of the time
+			}
+
 			IChunkProvider chunkProvider = world.getChunkProvider();
 
 			int originChunkX = chunk.xPosition;
@@ -35,6 +40,7 @@ public abstract class MixinChunkGenerator {
 			generator.generate(chunkProvider, world, originChunkX, originChunkZ);
 		}
 	}
+
 
 	@Unique
 	private boolean isOverworldGenerator() {

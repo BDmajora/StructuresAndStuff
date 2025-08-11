@@ -1,5 +1,6 @@
 package bdmajora.stuffmod.world.overworld.worldFeatures;
 
+import bdmajora.stuffmod.world.overworld.blockPickRand.RandomPillarBlockPicker;
 import net.minecraft.core.world.World;
 
 import java.util.Random;
@@ -14,7 +15,6 @@ import java.util.Random;
  */
 public class WorldFeatureDirtArmJunction {
 
-	private static final int BLOCK_ID = 220; // Dirt block ID for arms, adjust if needed
 	private static final int METADATA = 0;
 	private static final int ARM_Y = 160;
 
@@ -32,30 +32,33 @@ public class WorldFeatureDirtArmJunction {
 	 * x,z should be chunk center coordinates (chunkX << 4 + 8).
 	 */
 	public boolean place(World world, Random random, int x, int y, int z) {
+		// Pick a single block type for the whole junction
+		int blockId = RandomPillarBlockPicker.getRandomBlock(random);
+
 		// Place center block as the main junction node
-		placeBlock(world, x, y, z);
+		placeBlock(world, x, y, z, blockId);
 
 		// Place arms in the three connected directions based on rotation
 		switch (rotation) {
 			case 0: // North, South, East
-				placeArmNorth(world, x, y, z);
-				placeArmSouth(world, x, y, z);
-				placeArmEast(world, x, y, z);
+				placeArmNorth(world, x, y, z, blockId);
+				placeArmSouth(world, x, y, z, blockId);
+				placeArmEast(world, x, y, z, blockId);
 				break;
 			case 1: // North, South, West
-				placeArmNorth(world, x, y, z);
-				placeArmSouth(world, x, y, z);
-				placeArmWest(world, x, y, z);
+				placeArmNorth(world, x, y, z, blockId);
+				placeArmSouth(world, x, y, z, blockId);
+				placeArmWest(world, x, y, z, blockId);
 				break;
 			case 2: // North, East, West
-				placeArmNorth(world, x, y, z);
-				placeArmEast(world, x, y, z);
-				placeArmWest(world, x, y, z);
+				placeArmNorth(world, x, y, z, blockId);
+				placeArmEast(world, x, y, z, blockId);
+				placeArmWest(world, x, y, z, blockId);
 				break;
 			case 3: // South, East, West
-				placeArmSouth(world, x, y, z);
-				placeArmEast(world, x, y, z);
-				placeArmWest(world, x, y, z);
+				placeArmSouth(world, x, y, z, blockId);
+				placeArmEast(world, x, y, z, blockId);
+				placeArmWest(world, x, y, z, blockId);
 				break;
 			default:
 				// Invalid rotation - do nothing
@@ -65,35 +68,31 @@ public class WorldFeatureDirtArmJunction {
 		return true;
 	}
 
-	private void placeBlock(World world, int x, int y, int z) {
-		world.setBlockAndMetadataWithNotify(x, y, z, BLOCK_ID, METADATA);
+	private void placeBlock(World world, int x, int y, int z, int blockId) {
+		world.setBlockAndMetadataWithNotify(x, y, z, blockId, METADATA);
 	}
 
-	private void placeArmNorth(World world, int x, int y, int z) {
-		// Place a line of blocks northwards (decreasing z)
+	private void placeArmNorth(World world, int x, int y, int z, int blockId) {
 		for (int dz = 1; dz <= 7; dz++) {
-			world.setBlockAndMetadataWithNotify(x, y, z - dz, BLOCK_ID, METADATA);
+			world.setBlockAndMetadataWithNotify(x, y, z - dz, blockId, METADATA);
 		}
 	}
 
-	private void placeArmSouth(World world, int x, int y, int z) {
-		// Place a line of blocks southwards (increasing z)
+	private void placeArmSouth(World world, int x, int y, int z, int blockId) {
 		for (int dz = 1; dz <= 7; dz++) {
-			world.setBlockAndMetadataWithNotify(x, y, z + dz, BLOCK_ID, METADATA);
+			world.setBlockAndMetadataWithNotify(x, y, z + dz, blockId, METADATA);
 		}
 	}
 
-	private void placeArmEast(World world, int x, int y, int z) {
-		// Place a line of blocks eastwards (increasing x)
+	private void placeArmEast(World world, int x, int y, int z, int blockId) {
 		for (int dx = 1; dx <= 7; dx++) {
-			world.setBlockAndMetadataWithNotify(x + dx, y, z, BLOCK_ID, METADATA);
+			world.setBlockAndMetadataWithNotify(x + dx, y, z, blockId, METADATA);
 		}
 	}
 
-	private void placeArmWest(World world, int x, int y, int z) {
-		// Place a line of blocks westwards (decreasing x)
+	private void placeArmWest(World world, int x, int y, int z, int blockId) {
 		for (int dx = 1; dx <= 7; dx++) {
-			world.setBlockAndMetadataWithNotify(x - dx, y, z, BLOCK_ID, METADATA);
+			world.setBlockAndMetadataWithNotify(x - dx, y, z, blockId, METADATA);
 		}
 	}
 }

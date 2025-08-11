@@ -1,5 +1,6 @@
 package bdmajora.stuffmod.world.overworld.worldFeatures;
 
+import bdmajora.stuffmod.world.overworld.blockPickRand.RandomPillarBlockPicker;
 import net.minecraft.core.world.World;
 import net.minecraft.core.world.generate.feature.WorldFeature;
 
@@ -40,34 +41,37 @@ public class WorldFeatureDirtPillar extends WorldFeature {
 			height = minHeightNeeded;
 		}
 
+		// Pick a random block type for both the pillar and arms
+		int blockId = RandomPillarBlockPicker.getRandomBlock(random);
+
 		// Place the pillar
 		for (int i = 0; i < height; i++) {
 			int blockY = groundY + i;
-			world.setBlockAndMetadataWithNotify(centerX, blockY, centerZ, 220, 0);
+			world.setBlockAndMetadataWithNotify(centerX, blockY, centerZ, blockId, 0);
 		}
 
 		// Arms always at Y=160
-		placeArms(world, centerX, centerZ);
+		placeArms(world, centerX, centerZ, blockId);
 
 		return true;
 	}
 
-	private void placeArms(World world, int centerX, int centerZ) {
+	private void placeArms(World world, int centerX, int centerZ, int blockId) {
 		// EAST arm
 		for (int dx = 1; dx <= 7; dx++) {
-			world.setBlockAndMetadataWithNotify(centerX + dx, ARM_Y, centerZ, 220, 0);
+			world.setBlockAndMetadataWithNotify(centerX + dx, ARM_Y, centerZ, blockId, 0);
 		}
 		// WEST arm
 		for (int dx = 1; dx <= 8; dx++) {
-			world.setBlockAndMetadataWithNotify(centerX - dx, ARM_Y, centerZ, 220, 0);
+			world.setBlockAndMetadataWithNotify(centerX - dx, ARM_Y, centerZ, blockId, 0);
 		}
 		// SOUTH arm
 		for (int dz = 1; dz <= 7; dz++) {
-			world.setBlockAndMetadataWithNotify(centerX, ARM_Y, centerZ + dz, 220, 0);
+			world.setBlockAndMetadataWithNotify(centerX, ARM_Y, centerZ + dz, blockId, 0);
 		}
 		// NORTH arm
 		for (int dz = 1; dz <= 8; dz++) {
-			world.setBlockAndMetadataWithNotify(centerX, ARM_Y, centerZ - dz, 220, 0);
+			world.setBlockAndMetadataWithNotify(centerX, ARM_Y, centerZ - dz, blockId, 0);
 		}
 	}
 
