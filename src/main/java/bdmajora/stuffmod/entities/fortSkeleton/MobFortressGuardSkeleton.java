@@ -31,7 +31,7 @@ public class MobFortressGuardSkeleton extends MobZombie {
 		this.textureIdentifier = NamespaceID.getPermanent("stuffmod", "fort_skeleton");
 		this.fireImmune = true;
 		this.scoreValue = ModConfig.fort_skeleton_score;
-		this.moveSpeed = ModConfig.fort_skeleton_move_speed.floatValue();
+		this.moveSpeed = (float) ModConfig.fort_skeleton_move_speed;
 		if (this.random.nextInt(ModConfig.fort_skeleton_ranged_chance) == 0) {
 			this.ranged = 1;
 		}

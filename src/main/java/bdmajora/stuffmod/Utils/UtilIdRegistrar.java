@@ -1,4 +1,4 @@
-package bdmajora.stuffmod;
+package bdmajora.stuffmod.Utils;
 
 import net.minecraft.core.item.Item;
 

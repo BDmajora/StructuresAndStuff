@@ -1,11 +1,10 @@
 package bdmajora.stuffmod.blocks;
 
-import bdmajora.stuffmod.UtilIdRegistrar;
+import bdmajora.stuffmod.Utils.UtilIdRegistrar;
 import net.minecraft.core.data.tag.Tag;
 import net.minecraft.core.block.*;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.block.tag.BlockTags;
-import net.minecraft.core.block.Blocks;
 import turniplabs.halplibe.helper.BlockBuilder;
 import net.minecraft.core.item.block.ItemBlockSlab;
 

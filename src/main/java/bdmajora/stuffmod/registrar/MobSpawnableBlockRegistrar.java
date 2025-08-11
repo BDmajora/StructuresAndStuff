@@ -1,22 +1,22 @@
 package bdmajora.stuffmod.registrar;
 
-import bdmajora.stuffmod.ModConfig;
-import bdmajora.stuffmod.Util;
+import bdmajora.stuffmod.Utils.Util;
 import bdmajora.stuffmod.blocks.ModBlockTags;
-import net.minecraft.core.block.Blocks;
 
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
 
 public class MobSpawnableBlockRegistrar {
 
 	public static void registerFortressGuardSkeletonSpawnBlocks() {
-		// Register spawnable blocks for the Fortress Guard Skeleton
-		List<String> spawn_blocks = (List) ModConfig.get("mob.fortress_guard_skeleton.spawnable_blocks");
-		Iterator var2 = spawn_blocks.iterator();
+		List<String> spawn_blocks = Arrays.asList(
+			"stuffmod:block/fortress_brick",
+			"stuffmod:block/fortress_brick_stairs",
+			"stuffmod:block/fortress_brick_fence"
+			// Add more hardcoded blocks here as needed
+		);
 
-		while (var2.hasNext()) {
-			String key = (String) var2.next();
+		for (String key : spawn_blocks) {
 			ModBlockTags.SPAWNS_FORTRESS_SKELETONS.tag(Util.try_retrieve_key_or_err(key));
 		}
 	}

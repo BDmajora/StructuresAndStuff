@@ -15,7 +15,7 @@ public class MobCaveSpider extends MobSpider {
 		this.setSize(0.7F, 0.45F);
 		this.scoreValue = ModConfig.cave_spider_score;
 		this.attackStrength = ModConfig.cave_spider_attack_str;
-		this.moveSpeed = ModConfig.cave_spider_move_speed.floatValue();
+		this.moveSpeed = (float) ModConfig.cave_spider_move_speed;
 	}
 
 	public int getMaxHealth() {

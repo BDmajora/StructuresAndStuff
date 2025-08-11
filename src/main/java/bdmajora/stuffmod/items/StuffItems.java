@@ -1,6 +1,6 @@
 package bdmajora.stuffmod.items;
 
-import bdmajora.stuffmod.UtilIdRegistrar;
+import bdmajora.stuffmod.Utils.UtilIdRegistrar;
 import net.minecraft.core.item.Item;
 import turniplabs.halplibe.helper.ItemBuilder;
 import bdmajora.stuffmod.StuffMod;

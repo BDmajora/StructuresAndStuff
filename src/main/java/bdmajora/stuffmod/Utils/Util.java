@@ -3,7 +3,7 @@
 // (powered by FernFlower decompiler)
 //
 
-package bdmajora.stuffmod;
+package bdmajora.stuffmod.Utils;
 
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.Blocks;

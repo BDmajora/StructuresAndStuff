@@ -31,7 +31,7 @@ public class MobBlaze extends MobMonster {
 		this.fireImmune = true;
 		this.attackStrength = ModConfig.blaze_attack_str;
 		this.scoreValue = ModConfig.blaze_score;
-		this.moveSpeed = ModConfig.blaze_move_speed.floatValue();
+		this.moveSpeed = (float) ModConfig.blaze_move_speed;
 		int r = this.random.nextInt(3000);
 		if (r == 0) {
 			this.skin_variant = 3;
