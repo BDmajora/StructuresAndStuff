@@ -1,89 +1,63 @@
 package bdmajora.stuffmod.world.nether.worldGen.netherFortress;
 
 import bdmajora.stuffmod.world.LargeStructureGenerator;
-import bdmajora.stuffmod.world.nether.worldFeatures.netherFortress.WorldFeatureNetherStartPiece;
-import bdmajora.stuffmod.world.nether.worldFeatures.netherFortress.WorldFeatureNetherBridgeCorridor;
-import bdmajora.stuffmod.world.nether.worldFeatures.netherFortress.WorldFeatureNetherBridgeCorridor2;
 import bdmajora.stuffmod.world.nether.blockPicking.netherFortress.FortressBlocks;
+import bdmajora.stuffmod.world.nether.worldFeatures.netherFortress.WorldFeatureNetherBridgeEntrance;
+import bdmajora.stuffmod.world.nether.worldFeatures.netherFortress.WorldFeatureNetherBridgeStraight;
+import bdmajora.stuffmod.world.nether.worldFeatures.netherFortress.WorldFeatureNetherBridgeEnd;
 import net.minecraft.core.world.World;
+import net.minecraft.core.world.biome.Biome;
 import net.minecraft.core.world.chunk.provider.IChunkProvider;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 public class NetherFortressGenerator extends LargeStructureGenerator {
 
-	public static final int CHANCE_DENOMINATOR = 6; // ~16.6% chance per origin chunk
-	private static final int MAX_CHECKS_PER_CHUNK = 1;
+	// Use the static default FortressBlocks instance
+	private final FortressBlocks fortressBlocks = FortressBlocks.DEFAULT;
 
-	private static final Map<World, Map<Long, Integer>> worldChecks = new HashMap<>();
-
-	private final FortressBlocks fb;
-
-	public NetherFortressGenerator(FortressBlocks blocks) {
-		this.fb = blocks;
-		setRange(8);
+	public NetherFortressGenerator(int range) {
+		setRange(range);
 	}
 
 	@Override
 	public void generate(IChunkProvider chunkProvider, World world, int originChunkX, int originChunkZ) {
-		worldChecks.putIfAbsent(world, new HashMap<>());
-		Map<Long, Integer> checks = worldChecks.get(world);
+		Random rand = new Random(world.getRandomSeed()
+			^ ((long) originChunkX * 341873128712L)
+			^ ((long) originChunkZ * 132897987541L));
 
-		long originKey = chunkKey(originChunkX, originChunkZ);
-		if (checks.getOrDefault(originKey, 0) >= MAX_CHECKS_PER_CHUNK) return;
-		checks.put(originKey, checks.getOrDefault(originKey, 0) + 1);
-
-		// Fortress spawn chance
-		if (!NetherFortressGenLogic.shouldGenerate(world, originChunkX, originChunkZ, CHANCE_DENOMINATOR)) return;
-
-		Random rand = new Random(world.getRandomSeed() ^ ((long) originChunkX << 32) ^ originChunkZ);
-
-		// Position
+		// Pick the start position in block coords
 		int x = originChunkX * 16 + 4;
 		int z = originChunkZ * 16 + 4;
-		int y = 176; // fixed Nether fortress height
+		int y = findGroundLevel(world, x, z);
 
-		// Place start piece
-		boolean startPlaced = new WorldFeatureNetherStartPiece(fb).place(world, new Random(rand.nextLong()), x, y, z);
-		if (!startPlaced) return;
+		// Biome safety check (avoid snowy biomes, though Nether usually won't have)
+		Biome biome = world.getBlockBiome(x, y, z);
+		if (biome.hasSurfaceSnow()) return;
 
-		// Mark chunk as having fortress
-		checks.put(originKey, -1);
+		// Step 1: Entrance
+		new WorldFeatureNetherBridgeEntrance(fortressBlocks).place(world, rand, x, y, z);
 
-		// Corridor length
-		int corridorLength = 5;
+		// Step 2: Straight Bridge Piece (offset by 13 blocks forward from entrance)
+		int bridgeX = x;
+		int bridgeZ = z + 13; // Assuming forward in +Z direction
+		int bridgeY = findGroundLevel(world, bridgeX, bridgeZ);
+		new WorldFeatureNetherBridgeStraight(fortressBlocks).place(world, rand, bridgeX, bridgeY, bridgeZ);
 
-		// Pick corridor type randomly (50/50 chance)
-		boolean useCorridor2 = rand.nextBoolean();
-		if (useCorridor2) {
-			WorldFeatureNetherBridgeCorridor2 corridor = new WorldFeatureNetherBridgeCorridor2(fb);
-			placeCorridors(world, rand, corridor, x, y, z, corridorLength);
-		} else {
-			WorldFeatureNetherBridgeCorridor corridor = new WorldFeatureNetherBridgeCorridor(fb);
-			placeCorridors(world, rand, corridor, x, y, z, corridorLength);
-		}
+		// Step 3: Bridge End (offset by another 13 blocks forward from piece)
+		int endX = bridgeX;
+		int endZ = bridgeZ + 13;
+		int endY = findGroundLevel(world, endX, endZ);
+		new WorldFeatureNetherBridgeEnd(fortressBlocks).place(world, rand, endX, endY, endZ);
 	}
 
-	private void placeCorridors(World world, Random rand, Object corridorFeature, int x, int y, int z, int length) {
-		// For each direction, create a new Random instance for consistency
-		if (corridorFeature instanceof WorldFeatureNetherBridgeCorridor) {
-			WorldFeatureNetherBridgeCorridor corridor = (WorldFeatureNetherBridgeCorridor) corridorFeature;
-			corridor.place(world, new Random(rand.nextLong()), x - 2, y, z - length - 1); // North
-			corridor.place(world, new Random(rand.nextLong()), x - 2, y, z + length + 1); // South
-			corridor.place(world, new Random(rand.nextLong()), x - length - 1, y, z - 2); // West
-			corridor.place(world, new Random(rand.nextLong()), x + length + 1, y, z - 2); // East
-		} else if (corridorFeature instanceof WorldFeatureNetherBridgeCorridor2) {
-			WorldFeatureNetherBridgeCorridor2 corridor = (WorldFeatureNetherBridgeCorridor2) corridorFeature;
-			corridor.place(world, new Random(rand.nextLong()), x - 2, y, z - length - 1); // North
-			corridor.place(world, new Random(rand.nextLong()), x - 2, y, z + length + 1); // South
-			corridor.place(world, new Random(rand.nextLong()), x - length - 1, y, z - 2); // West
-			corridor.place(world, new Random(rand.nextLong()), x + length + 1, y, z - 2); // East
+	private int findGroundLevel(World world, int x, int z) {
+		// Scan downward from top Nether terrain limit until solid ground is found
+		for (int y = 120; y > 30; y--) {
+			if (!world.isAirBlock(x, y, z) && world.isAirBlock(x, y + 1, z)) {
+				return y + 1;
+			}
 		}
-	}
-
-	private long chunkKey(int chunkX, int chunkZ) {
-		return (((long) chunkX) << 32) | (chunkZ & 0xffffffffL);
+		return 64; // Fallback
 	}
 }

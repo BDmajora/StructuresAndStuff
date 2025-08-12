@@ -26,9 +26,11 @@ public abstract class MixinChunkGenerator {
 	protected World world;
 
 	// Reuse generator instances for efficiency
+	@Unique
 	private final DirtPillarGenerator dirtPillarGenerator = new DirtPillarGenerator();
+	@Unique
 	private final NetherFortressGenerator netherFortressGenerator =
-		new NetherFortressGenerator(FortressBlocks.DEFAULT);
+		new NetherFortressGenerator(10); // or any integer you want for range
 
 	@Inject(method = "decorate", at = @At("TAIL"))
 	private void injectCustomStructures(Chunk chunk, CallbackInfo ci) {
@@ -46,11 +48,12 @@ public abstract class MixinChunkGenerator {
 
 		// Nether fortress
 		if (isNetherGenerator()) {
-			if (!NetherFortressGenLogic.shouldGenerate(world, originChunkX, originChunkZ, NetherFortressGenerator.CHANCE_DENOMINATOR)) {
+			if (!NetherFortressGenLogic.shouldGenerate(world)) {
 				return; // skip most of the time
 			}
 			netherFortressGenerator.generate(chunkProvider, world, originChunkX, originChunkZ);
 		}
+
 
 
 	}
