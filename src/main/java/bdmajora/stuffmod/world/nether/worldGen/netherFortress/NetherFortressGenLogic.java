@@ -13,6 +13,6 @@ public class NetherFortressGenLogic {
 	 */
 	public static boolean shouldGenerate(World world) {
 		// For example, 1-in-6 chance; change 6 to adjust frequency
-		return world.rand.nextInt(6) == 0;
+		return world.rand.nextInt(50) == 0;
 	}
 }
