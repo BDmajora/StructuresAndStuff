@@ -18,6 +18,9 @@ public class WorldFeatureNetherBridgeCrossing extends WorldFeature {
 		// Floor 7x7
 		fillWithBlocks(world, x, y, z, x + 6, y, z + 6, fb.brick.id(), fb.brick.id());
 
+		// Add sub-floor layer at y+1 so walls sit flush with interior floor
+		fillWithBlocks(world, x, y + 1, z, x + 6, y + 1, z + 6, fb.brick.id(), fb.brick.id());
+
 		// Interior air space hollowed from y+2 to y+7
 		fillWithBlocks(world, x, y + 2, z, x + 6, y + 7, z + 6, 0, 0);
 
@@ -41,10 +44,10 @@ public class WorldFeatureNetherBridgeCrossing extends WorldFeature {
 		fillWithBlocks(world, x + 6, y + 5, z + 2, x + 6, y + 5, z + 4, fb.fence.id(), fb.fence.id());
 		fillWithBlocks(world, x + 6, y + 6, z + 2, x + 6, y + 6, z + 4, fb.brick.id(), fb.brick.id());
 
-		// Support pillars downwards
+		// Support pillars downwards (start at y so they connect to floor)
 		for (int dx = 0; dx <= 6; dx++) {
 			for (int dz = 0; dz <= 6; dz++) {
-				fillDownwards(world, fb.brick.id(), x + dx, y - 1, z + dz);
+				fillDownwards(world, fb.brick.id(), x + dx, y, z + dz);
 			}
 		}
 

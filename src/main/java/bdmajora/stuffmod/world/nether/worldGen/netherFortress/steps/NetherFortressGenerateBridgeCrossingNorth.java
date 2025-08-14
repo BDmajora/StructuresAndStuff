@@ -20,7 +20,7 @@ public class NetherFortressGenerateBridgeCrossingNorth {
 	 * @param endZ the Z coordinate where the bridge ends
 	 */
 	public boolean placeCrossing(World world, Random rand, int x, int y, int endZ) {
-		int crossingX = x - 4; // same base X as BridgeEndNorth
+		int crossingX = x + 3; // same base X as BridgeEndNorth
 		int crossingY = y + 3;
 		endZ += 19; // forward offset for north
 		return new WorldFeatureNetherBridgeCrossing(fortressBlocks)
