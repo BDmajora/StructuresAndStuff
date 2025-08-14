@@ -14,8 +14,8 @@ public class NetherFortressGenStep3 {
 	}
 
 	public boolean placeStep3(World world, Random rand, int x, int y, int z) {
-		int endX = x;
-		int endZ = z + 26; // 13 blocks offset from Step 2 bridge end
+		int endX = x + 4;
+		int endZ = z + 32; // 13 blocks offset from Step 2 bridge end
 		int endY = y;
 		return new WorldFeatureNetherBridgeEnd(fortressBlocks).place(world, rand, endX, endY, endZ);
 	}

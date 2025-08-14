@@ -14,9 +14,15 @@ public class NetherFortressGenStep2 {
 	}
 
 	public boolean placeStep2(World world, Random rand, int x, int y, int z) {
-		int bridgeX = x;
-		int bridgeZ = z + 13; // Assuming forward in +Z direction
-		int bridgeY = y;
-		return new WorldFeatureNetherBridgeStraight(fortressBlocks).place(world, rand, bridgeX, bridgeY, bridgeZ);
+		int entranceWidth = 13; // from x to x+12
+		int bridgeWidth = 5;    // change if different
+
+		// Center-align the bridge with the entrance
+		int bridgeX = x + (entranceWidth / 2) - (bridgeWidth / 2);
+		int bridgeZ = z + 13; // forward from entrance
+
+		return new WorldFeatureNetherBridgeStraight(fortressBlocks)
+			.place(world, rand, bridgeX, y, bridgeZ);
 	}
+
 }
