@@ -6,11 +6,13 @@ import net.minecraft.core.world.World;
 
 import java.util.Random;
 
-public class NetherFortressGenerateBridgeEnd {
+public class NetherFortressGenerateBridgeEndNorth {
 	private final FortressBlocks fortressBlocks;
+	private final int rotation;
 
-	public NetherFortressGenerateBridgeEnd(FortressBlocks blocks) {
+	public NetherFortressGenerateBridgeEndNorth (FortressBlocks blocks, int rotation) {
 		this.fortressBlocks = blocks;
+		this.rotation = rotation;
 	}
 
 	/**
@@ -18,9 +20,10 @@ public class NetherFortressGenerateBridgeEnd {
 	 * @param endZ the Z coordinate where the bridge ends
 	 */
 	public boolean placeBridgeEnd(World world, Random rand, int x, int y, int endZ) {
-		int endX = x + 4; // keep centered relative to bridge
+		int endX = x + 4; // use same base X as bridge start (rotation handles actual position)
 		int endY = y;
-		endZ += 19; // hard-coded offset forward
-		return new WorldFeatureNetherBridgeEnd(fortressBlocks).place(world, rand, endX, endY, endZ);
+		endZ += 19; // offset forward in local coords
+		return new WorldFeatureNetherBridgeEnd(fortressBlocks, rotation)
+			.place(world, rand, endX, endY, endZ);
 	}
 }

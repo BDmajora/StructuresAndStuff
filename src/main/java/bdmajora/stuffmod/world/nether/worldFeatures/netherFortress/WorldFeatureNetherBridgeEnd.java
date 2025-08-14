@@ -11,9 +11,11 @@ import static net.betterthanadventure.utils.BiomeFinder.seed;
 public class WorldFeatureNetherBridgeEnd extends WorldFeature {
 	private final FortressBlocks fb;
 	private final int fillSeed;
+	private final int rotation;
 
-	public WorldFeatureNetherBridgeEnd(FortressBlocks blocks) {
+	public WorldFeatureNetherBridgeEnd(FortressBlocks blocks, int rotation) {
 		this.fb = blocks;
+		this.rotation = ((rotation % 360) + 360) % 360; // normalize
 		this.fillSeed = Math.toIntExact(seed);
 	}
 
@@ -25,36 +27,54 @@ public class WorldFeatureNetherBridgeEnd extends WorldFeature {
 		for (int dx = 0; dx <= 4; dx++) {
 			for (int dy = 3; dy <= 4; dy++) {
 				int dzHeight = randomSeed.nextInt(8);
-				fillWithBlocks(world, x + dx, y + dy, z, x + dx, y + dy, z + dzHeight, fb.brick.id(), fb.brick.id());
+				fillWithBlocksRot(world, x, y, z, dx, dy, 0, dx, dy, dzHeight, fb.brick.id(), fb.brick.id());
 			}
 		}
 
 		int height = randomSeed.nextInt(8);
-		fillWithBlocks(world, x, y + 5, z, x, y + 5, z + height, fb.brick.id(), fb.brick.id());
+		fillWithBlocksRot(world, x, y, z, 0, 5, 0, 0, 5, height, fb.brick.id(), fb.brick.id());
 
 		height = randomSeed.nextInt(8);
-		fillWithBlocks(world, x + 4, y + 5, z, x + 4, y + 5, z + height, fb.brick.id(), fb.brick.id());
+		fillWithBlocksRot(world, x, y, z, 4, 5, 0, 4, 5, height, fb.brick.id(), fb.brick.id());
 
 		for (int dx = 0; dx <= 4; dx++) {
 			int dzHeight = randomSeed.nextInt(5);
-			fillWithBlocks(world, x + dx, y + 2, z, x + dx, y + 2, z + dzHeight, fb.brick.id(), fb.brick.id());
+			fillWithBlocksRot(world, x, y, z, dx, 2, 0, dx, 2, dzHeight, fb.brick.id(), fb.brick.id());
 		}
 
 		for (int dx = 0; dx <= 4; dx++) {
 			for (int dy = 0; dy <= 1; dy++) {
 				int dzHeight = randomSeed.nextInt(3);
-				fillWithBlocks(world, x + dx, y + dy, z, x + dx, y + dy, z + dzHeight, fb.brick.id(), fb.brick.id());
+				fillWithBlocksRot(world, x, y, z, dx, dy, 0, dx, dy, dzHeight, fb.brick.id(), fb.brick.id());
 			}
 		}
 
 		return true;
 	}
 
-	private void fillWithBlocks(World world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, int blockId, int meta) {
-		for (int bx = minX; bx <= maxX; bx++) {
-			for (int by = minY; by <= maxY; by++) {
-				for (int bz = minZ; bz <= maxZ; bz++) {
-					world.setBlockAndMetadataWithNotify(bx, by, bz, blockId, meta);
+	// Rotation helper
+	private int[] rotate(int dx, int dz) {
+		switch (rotation) {
+			case 90:  return new int[]{-dz, dx};
+			case 180: return new int[]{-dx, -dz};
+			case 270: return new int[]{dz, -dx};
+			default:  return new int[]{dx, dz};
+		}
+	}
+
+	// Rotation-aware fill
+	private void fillWithBlocksRot(World world, int ox, int oy, int oz,
+								   int minX, int minY, int minZ,
+								   int maxX, int maxY, int maxZ,
+								   int blockId, int meta) {
+		for (int dx = minX; dx <= maxX; dx++) {
+			for (int dy = minY; dy <= maxY; dy++) {
+				for (int dz = minZ; dz <= maxZ; dz++) {
+					int[] r = rotate(dx, dz);
+					world.setBlockAndMetadataWithNotify(
+						ox + r[0], oy + dy, oz + r[1],
+						blockId, meta
+					);
 				}
 			}
 		}
