@@ -13,27 +13,26 @@ public class NetherFortressGenerateBridge {
 		this.fortressBlocks = blocks;
 	}
 
-	public boolean generateBridge(World world, Random rand, int x, int y, int z) {
-		int entranceWidth = 13; // from x to x+12
-		int bridgeWidth = 5;    // change if different
-		int bridgeLength = 19;  // known from WorldFeatureNetherBridgeStraight
+	/**
+	 * Generates a variable-length bridge and returns the Z coordinate of the last segment.
+	 */
+	public int generateBridge(World world, Random rand, int x, int y, int z) {
+		int entranceWidth = 13;
+		int bridgeWidth = 5;
+		int bridgeLength = 19;
 
-		// Decide how many bridge segments to place (at least 1)
-		int bridgeCount = 2 + rand.nextInt(7); // 1–3 bridges
-		boolean allPlaced = true;
+		int bridgeCount = 2 + rand.nextInt(9); // 2–10 bridges
 
-		// Center-align the bridge with the entrance
 		int bridgeX = x + (entranceWidth / 2) - (bridgeWidth / 2);
-		int bridgeZ = z + 13; // forward from entrance
+		int bridgeZ = z + 13;
 
 		WorldFeatureNetherBridgeStraight bridge = new WorldFeatureNetherBridgeStraight(fortressBlocks);
 
-		// Place bridges back-to-back
 		for (int i = 0; i < bridgeCount; i++) {
-			boolean placed = bridge.place(world, rand, bridgeX, y, bridgeZ + (i * bridgeLength));
-			allPlaced &= placed; // require all to succeed
+			bridge.place(world, rand, bridgeX, y, bridgeZ + (i * bridgeLength));
 		}
 
-		return allPlaced;
+		// Return the Z coordinate of the last bridge segment's start + length
+		return bridgeZ + ((bridgeCount - 1) * bridgeLength);
 	}
 }

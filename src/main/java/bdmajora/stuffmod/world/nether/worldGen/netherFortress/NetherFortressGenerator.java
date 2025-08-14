@@ -30,9 +30,10 @@ public class NetherFortressGenerator extends LargeStructureGenerator {
 		boolean startPlaced = startPlacer.placeStart(world, info.rand, info.x, info.y, info.z);
 		if (!startPlaced) return;
 
-		boolean bridgePlaced = bridgePlacer.generateBridge(world, info.rand, info.x, info.y, info.z);
-		if (!bridgePlaced) return;
+		// Generate bridges and get end Z coordinate
+		int bridgeEndZ = bridgePlacer.generateBridge(world, info.rand, info.x, info.y, info.z);
 
-		bridgeEndPlacer.placeBridgeEnd(world, info.rand, info.x, info.y, info.z);
+		// Always place the bridge end
+		bridgeEndPlacer.placeBridgeEnd(world, info.rand, info.x, info.y, bridgeEndZ);
 	}
 }
