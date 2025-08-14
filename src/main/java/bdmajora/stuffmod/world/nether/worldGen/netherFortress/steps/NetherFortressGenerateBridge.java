@@ -19,7 +19,7 @@ public class NetherFortressGenerateBridge {
 		int bridgeLength = 19;  // known from WorldFeatureNetherBridgeStraight
 
 		// Decide how many bridge segments to place (at least 1)
-		int bridgeCount = 1 + rand.nextInt(3); // 1–3 bridges
+		int bridgeCount = 2 + rand.nextInt(7); // 1–3 bridges
 		boolean allPlaced = true;
 
 		// Center-align the bridge with the entrance
