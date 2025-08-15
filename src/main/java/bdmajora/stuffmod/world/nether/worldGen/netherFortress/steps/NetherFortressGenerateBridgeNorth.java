@@ -25,7 +25,7 @@ public class NetherFortressGenerateBridgeNorth {
 		int bridgeWidth = 5;
 		int bridgeLength = 19;
 
-		int bridgeCount = 2 + rand.nextInt(9); // 2–10 bridges
+		int bridgeCount = 2 + rand.nextInt(3); // 2–10 bridges
 
 		int bridgeX = x + (entranceWidth / 2) - (bridgeWidth / 2);
 		int bridgeZ = z + 13; // NORTH offset

@@ -6,19 +6,17 @@ import net.minecraft.core.world.World;
 
 import java.util.Random;
 
-public class NetherFortressGenerateBridgeSouth {
+public class NetherFortressGenerateBridgeEast {
 	private final FortressBlocks fortressBlocks;
 	private final int rotation;
 
-	public NetherFortressGenerateBridgeSouth(FortressBlocks blocks, int rotation) {
+	public NetherFortressGenerateBridgeEast(FortressBlocks blocks, int rotation) {
 		this.fortressBlocks = blocks;
-
-		// TEMP: Ignore passed rotation and hard-code for testing
-		this.rotation = 0; // 0 = north, 90 = east, 180 = south, 270 = west
+		this.rotation = 90; // East
 	}
 
 	/**
-	 * Generates a variable-length bridge going south and returns the Z coordinate of the last segment.
+	 * Generates a variable-length bridge going east and returns the X coordinate of the last segment.
 	 */
 	public int generateBridge(World world, Random rand, int x, int y, int z) {
 		int entranceWidth = 13;
@@ -27,15 +25,15 @@ public class NetherFortressGenerateBridgeSouth {
 
 		int bridgeCount = 2 + rand.nextInt(3); // 2–10 bridges
 
-		int bridgeX = x + (entranceWidth / 2) - (bridgeWidth / 2);
-		int bridgeZ = z -19; // SOUTH offset
+		int bridgeX = x + 28; // EAST offset
+		int bridgeZ = z - 6;
 
 		WorldFeatureNetherBridgeStraight bridge = new WorldFeatureNetherBridgeStraight(fortressBlocks, rotation);
 
 		for (int i = 0; i < bridgeCount; i++) {
-			bridge.place(world, rand, bridgeX, y, bridgeZ - (i * bridgeLength));
+			bridge.place(world, rand, bridgeX + (i * bridgeLength), y, bridgeZ);
 		}
 
-		return bridgeZ - ((bridgeCount - 1) * bridgeLength);
+		return bridgeX + ((bridgeCount - 1) * bridgeLength);
 	}
 }

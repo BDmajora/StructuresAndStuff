@@ -1,8 +1,8 @@
 package bdmajora.stuffmod.mixin;
 
-import bdmajora.stuffmod.world.nether.blockPicking.netherFortress.FortressBlocks;
 import bdmajora.stuffmod.world.nether.worldGen.netherFortress.NetherFortressGenLogic;
 import bdmajora.stuffmod.world.nether.worldGen.netherFortress.NetherFortressGenerator;
+import bdmajora.stuffmod.world.nether.worldGen.netherFortress.NetherFortressPlacementHelper;
 import bdmajora.stuffmod.world.overworld.worldGen.DirtPillarGenLogic;
 import bdmajora.stuffmod.world.overworld.worldGen.DirtPillarGenerator;
 import net.minecraft.core.world.World;
@@ -30,7 +30,7 @@ public abstract class MixinChunkGenerator {
 	private final DirtPillarGenerator dirtPillarGenerator = new DirtPillarGenerator();
 	@Unique
 	private final NetherFortressGenerator netherFortressGenerator =
-		new NetherFortressGenerator(10); // or any integer you want for range
+		new NetherFortressGenerator(10); // fortress build range
 
 	@Inject(method = "decorate", at = @At("TAIL"))
 	private void injectCustomStructures(Chunk chunk, CallbackInfo ci) {
@@ -40,22 +40,19 @@ public abstract class MixinChunkGenerator {
 
 		// Overworld dirt pillars
 		if (isOverworldGenerator()) {
-			if (!DirtPillarGenLogic.shouldGenerate(world)) {
-				return; // skip most of the time
-			}
+			if (!DirtPillarGenLogic.shouldGenerate(world)) return;
 			dirtPillarGenerator.generate(chunkProvider, world, originChunkX, originChunkZ);
 		}
 
 		// Nether fortress
 		if (isNetherGenerator()) {
-			if (!NetherFortressGenLogic.shouldGenerate(world)) {
-				return; // skip most of the time
+			if (!NetherFortressGenLogic.shouldGenerate(world)) return;
+
+			// Ask the placement helper if this chunk is the exact spawn point for a fortress
+			if (NetherFortressPlacementHelper.shouldGenerateHere(world, originChunkX, originChunkZ)) {
+				netherFortressGenerator.generate(chunkProvider, world, originChunkX, originChunkZ);
 			}
-			netherFortressGenerator.generate(chunkProvider, world, originChunkX, originChunkZ);
 		}
-
-
-
 	}
 
 	@Unique
