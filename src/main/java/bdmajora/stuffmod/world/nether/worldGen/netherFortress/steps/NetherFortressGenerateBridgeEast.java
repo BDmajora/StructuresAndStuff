@@ -6,34 +6,55 @@ import net.minecraft.core.world.World;
 
 import java.util.Random;
 
+/**
+ * Generates a variable-length eastward bridge and returns the final segment's coordinates.
+ */
 public class NetherFortressGenerateBridgeEast {
+
 	private final FortressBlocks fortressBlocks;
 	private final int rotation;
 
 	public NetherFortressGenerateBridgeEast(FortressBlocks blocks, int rotation) {
 		this.fortressBlocks = blocks;
-		this.rotation = 90; // East
+		this.rotation = 90; // East uses same rotation as West
 	}
 
 	/**
-	 * Generates a variable-length bridge going east and returns the X coordinate of the last segment.
+	 * Holds both placement success and coordinates of the final bridge segment.
 	 */
-	public int generateBridge(World world, Random rand, int x, int y, int z) {
-		int entranceWidth = 13;
-		int bridgeWidth = 5;
-		int bridgeLength = 19;
+	public static class BridgeResult {
+		public final boolean placedAny;
+		public final int endX;
+		public final int endY;
+		public final int endZ;
 
-		int bridgeCount = 2 + rand.nextInt(3); // 2–10 bridges
+		public BridgeResult(boolean placedAny, int endX, int endY, int endZ) {
+			this.placedAny = placedAny;
+			this.endX = endX;
+			this.endY = endY;
+			this.endZ = endZ;
+		}
+	}
 
-		int bridgeX = x + 28; // EAST offset
-		int bridgeZ = z - 6;
+	/**
+	 * Generates a variable-length bridge going east and returns the coordinates of the last segment.
+	 */
+	public BridgeResult generateBridge(World world, Random rand, int x, int y, int z) {
+		final int bridgeLength = 19;
+		int bridgeCount = 2 + rand.nextInt(3); // 2–4 segments
+
+		int startX = x + 28; // EAST offset
+		int startZ = z - 6;
 
 		WorldFeatureNetherBridgeStraight bridge = new WorldFeatureNetherBridgeStraight(fortressBlocks, rotation);
 
+		boolean placedAny = false;
 		for (int i = 0; i < bridgeCount; i++) {
-			bridge.place(world, rand, bridgeX + (i * bridgeLength), y, bridgeZ);
+			boolean placed = bridge.place(world, rand, startX + (i * bridgeLength), y, startZ);
+			placedAny = placedAny || placed;
 		}
 
-		return bridgeX + ((bridgeCount - 1) * bridgeLength);
+		int endX = startX + ((bridgeCount - 1) * bridgeLength);
+		return new BridgeResult(placedAny, endX, y, startZ);
 	}
 }
