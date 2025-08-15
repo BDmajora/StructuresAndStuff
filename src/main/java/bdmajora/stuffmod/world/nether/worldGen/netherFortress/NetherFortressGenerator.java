@@ -39,20 +39,22 @@ public class NetherFortressGenerator extends LargeStructureGenerator {
 		boolean startPlaced = startPlacer.placeStart(world, info.rand, info.x, info.y, info.z);
 		if (!startPlaced) return;
 
-		// NORTH BRIDGE
-		int bridgeEndZNorth = bridgePlacerNorth.generateBridge(world, info.rand, info.x, info.y, info.z);
-		if (shouldPlaceCrossing(info.rand)) {
-			crossingPlacerNorth.placeCrossing(world, info.rand, info.x, info.y, bridgeEndZNorth);
-			bridgePlacerWest.generateBridge(world, info.rand, info.x, info.y, bridgeEndZNorth);
-			bridgePlacerEast.generateBridge(world, info.rand, info.x, info.y, bridgeEndZNorth);
-		} else {
-			bridgeEndPlacerNorth.placeBridgeEnd(world, info.rand, info.x, info.y, bridgeEndZNorth);
-		}
-
-		// SOUTH — place end piece only
+		// SOUTH — place end piece only, at entrance
 		bridgeEndPlacerSouth.placeBridgeEnd(world, info.rand, info.x, info.y, info.z);
 
+		// NORTH — place the original first north bridge
+		int bridgeEndZNorth = bridgePlacerNorth.generateBridge(world, info.rand, info.x, info.y, info.z);
+
+		// Place the crossing for this first north bridge
+		crossingPlacerNorth.placeCrossing(world, info.rand, info.x, info.y, bridgeEndZNorth);
+
+		// Add side bridges from this crossing
+		bridgePlacerWest.generateBridge(world, info.rand, info.x, info.y, bridgeEndZNorth);
+		bridgePlacerEast.generateBridge(world, info.rand, info.x, info.y, bridgeEndZNorth);
+
+		// NO further north bridges — remove any looped continuation
 	}
+
 
 	private boolean shouldPlaceCrossing(Random rand) {
 		return rand.nextBoolean(); // 50% chance

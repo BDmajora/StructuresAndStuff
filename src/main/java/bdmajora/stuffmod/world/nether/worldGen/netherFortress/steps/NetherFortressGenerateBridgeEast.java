@@ -44,7 +44,7 @@ public class NetherFortressGenerateBridgeEast {
 		int bridgeCount = 2 + rand.nextInt(3); // 2–4 segments
 
 		int startX = x + 28; // EAST offset
-		int startZ = z - 6;
+		int startZ = z + 20;
 
 		WorldFeatureNetherBridgeStraight bridge = new WorldFeatureNetherBridgeStraight(fortressBlocks, rotation);
 
