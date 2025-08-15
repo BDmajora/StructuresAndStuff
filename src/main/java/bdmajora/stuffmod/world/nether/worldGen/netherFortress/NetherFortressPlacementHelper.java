@@ -9,10 +9,28 @@ import java.util.Set;
 
 public class NetherFortressPlacementHelper {
 
-	// How often to roll for a fortress (smaller = more frequent)
-	private static final int CANDIDATE_DISTANCE_CHUNKS = 8; // 128 blocks
-	// Minimum distance between two fortresses (in chunks)
-	private static final int MIN_GAP_CHUNKS = 24; // 384 blocks
+	// ---------------------------
+	// CONFIG
+	// ---------------------------
+	// Toggle between test mode (dense generation) and normal mode
+	private static final boolean TEST_MODE = true;
+
+	// Normal mode settings
+	private static final int NORMAL_CANDIDATE_DISTANCE_CHUNKS = 8;   // 128 blocks
+	private static final int NORMAL_MIN_GAP_CHUNKS = 24;              // 384 blocks
+
+	// Test mode settings (more frequent, closer together)
+	private static final int TEST_CANDIDATE_DISTANCE_CHUNKS = 2;      // 32 blocks
+	private static final int TEST_MIN_GAP_CHUNKS = 4;                 // 64 blocks
+
+	// ---------------------------
+	// Active settings based on mode
+	// ---------------------------
+	private static final int CANDIDATE_DISTANCE_CHUNKS =
+		TEST_MODE ? TEST_CANDIDATE_DISTANCE_CHUNKS : NORMAL_CANDIDATE_DISTANCE_CHUNKS;
+
+	private static final int MIN_GAP_CHUNKS =
+		TEST_MODE ? TEST_MIN_GAP_CHUNKS : NORMAL_MIN_GAP_CHUNKS;
 
 	// Store generated fortress chunk coords
 	private static final Set<int[]> GENERATED_LOCATIONS = new HashSet<>();
