@@ -1,6 +1,6 @@
 package bdmajora.stuffmod.world.overworld.worldGen;
 
-import bdmajora.stuffmod.world.LargeStructureGenerator;
+import bdmajora.stuffmod.world.GeneralStructureGenerator;
 import bdmajora.stuffmod.world.overworld.worldFeatures.WorldFeatureDirtArmNS;
 import bdmajora.stuffmod.world.overworld.worldFeatures.WorldFeatureDirtArmTurn;
 import bdmajora.stuffmod.world.overworld.worldFeatures.WorldFeatureDirtPillar;
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class DirtPillarGenerator extends LargeStructureGenerator {
+public class DirtPillarGenerator extends GeneralStructureGenerator {
 
 	private static final int CHANCE_DENOMINATOR = 4; // 25% chance
 	private static final int MAX_PILLARS_PER_GENERATE = 5;

@@ -1,6 +1,6 @@
 package bdmajora.stuffmod.world.nether.worldGen.netherFortress;
 
-import bdmajora.stuffmod.world.LargeStructureGenerator;
+import bdmajora.stuffmod.world.GeneralStructureGenerator;
 import bdmajora.stuffmod.world.nether.blockPicking.netherFortress.FortressBlocks;
 import bdmajora.stuffmod.world.nether.worldGen.netherFortress.steps.*;
 import net.minecraft.core.world.World;
@@ -13,7 +13,7 @@ import java.util.Random;
  * coordinates produced by the previous step—without introducing any
  * new shared base types in your codebase.
  */
-public class NetherFortressGenerator extends LargeStructureGenerator {
+public class NetherFortressGenerator extends GeneralStructureGenerator {
 
 	private final FortressBlocks fortressBlocks = FortressBlocks.DEFAULT;
 

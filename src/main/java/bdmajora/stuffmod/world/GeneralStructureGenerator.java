@@ -6,7 +6,7 @@ import net.minecraft.core.world.chunk.provider.IChunkProvider;
 
 import java.util.Random;
 
-public abstract class LargeStructureGenerator {
+public abstract class GeneralStructureGenerator {
 
 	protected int range;  // Configurable range of chunks to generate around origin
 	protected Random rand = new Random();
@@ -15,11 +15,11 @@ public abstract class LargeStructureGenerator {
 	// Limit to avoid excessive chunk processing in one generate call
 	private static final int MAX_CHUNKS_PER_GENERATE = 100;
 
-	public LargeStructureGenerator() {
+	public GeneralStructureGenerator() {
 		this(8);  // Default range 8 chunks
 	}
 
-	public LargeStructureGenerator(int range) {
+	public GeneralStructureGenerator(int range) {
 		if (range < 0) throw new IllegalArgumentException("Range cannot be negative");
 		this.range = range;
 	}
