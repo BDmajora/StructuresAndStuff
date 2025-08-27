@@ -4,6 +4,7 @@ import net.minecraft.core.world.World;
 import net.minecraft.core.world.biome.Biome;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
@@ -33,7 +34,26 @@ public class NetherFortressPlacementLogic {
 		TEST_MODE ? TEST_MIN_GAP_CHUNKS : NORMAL_MIN_GAP_CHUNKS;
 
 	// Store generated fortress chunk coords
-	private static final Set<int[]> GENERATED_LOCATIONS = new HashSet<>();
+	private static final Set<ChunkCoord> GENERATED_LOCATIONS = new HashSet<>();
+
+	// Simple immutable chunk coordinate type
+	private static class ChunkCoord {
+		final int x, z;
+		ChunkCoord(int x, int z) { this.x = x; this.z = z; }
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof ChunkCoord)) return false;
+			ChunkCoord other = (ChunkCoord) o;
+			return x == other.x && z == other.z;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(x, z);
+		}
+	}
 
 	public static class PlacementInfo {
 		public final int x, y, z;
@@ -68,19 +88,22 @@ public class NetherFortressPlacementLogic {
 		if (info == null) return false;
 
 		// Check for proximity to existing fortress locations
-		for (int[] coords : GENERATED_LOCATIONS) {
-			int dx = coords[0] - originChunkX;
-			int dz = coords[1] - originChunkZ;
+		for (ChunkCoord coords : GENERATED_LOCATIONS) {
+			int dx = coords.x - originChunkX;
+			int dz = coords.z - originChunkZ;
 			if (Math.abs(dx) < MIN_GAP_CHUNKS && Math.abs(dz) < MIN_GAP_CHUNKS) {
 				return false; // too close to another fortress
 			}
 		}
 
 		// Store this fortress location
-		GENERATED_LOCATIONS.add(new int[]{originChunkX, originChunkZ});
+		GENERATED_LOCATIONS.add(new ChunkCoord(originChunkX, originChunkZ));
 		return true;
 	}
 
+	/**
+	 * Calculates deterministic placement info for a chunk candidate.
+	 */
 	public static PlacementInfo getPlacementInfo(World world, int originChunkX, int originChunkZ) {
 		// Determine region coords
 		int regionX = originChunkX / CANDIDATE_DISTANCE_CHUNKS;
@@ -98,7 +121,7 @@ public class NetherFortressPlacementLogic {
 		if (originChunkX == candidateChunkX && originChunkZ == candidateChunkZ) {
 			int x = originChunkX * 16 + 4;
 			int z = originChunkZ * 16 + 4;
-			int y = 176; // Fixed height
+			int y = 176; // Fixed height (could be improved later with terrain logic)
 
 			Biome biome = world.getBlockBiome(x, y, z);
 			if (biome != null) {
@@ -106,5 +129,12 @@ public class NetherFortressPlacementLogic {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Clears stored fortress locations — call this on world load/reload.
+	 */
+	public static void reset() {
+		GENERATED_LOCATIONS.clear();
 	}
 }
