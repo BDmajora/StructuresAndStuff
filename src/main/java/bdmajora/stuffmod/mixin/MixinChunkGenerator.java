@@ -1,8 +1,7 @@
 package bdmajora.stuffmod.mixin;
 
-import bdmajora.stuffmod.world.nether.worldGen.netherFortress.NetherFortressGenLogic;
 import bdmajora.stuffmod.world.nether.worldGen.netherFortress.NetherFortressGenerator;
-import bdmajora.stuffmod.world.nether.worldGen.netherFortress.NetherFortressPlacementHelper;
+import bdmajora.stuffmod.world.nether.worldGen.netherFortress.NetherFortressPlacementLogic;
 import bdmajora.stuffmod.world.overworld.worldGen.DirtPillarGenLogic;
 import bdmajora.stuffmod.world.overworld.worldGen.DirtPillarGenerator;
 import net.minecraft.core.world.World;
@@ -46,10 +45,10 @@ public abstract class MixinChunkGenerator {
 
 		// Nether fortress
 		if (isNetherGenerator()) {
-			if (!NetherFortressGenLogic.shouldGenerate(world)) return;
+			if (!NetherFortressPlacementLogic.shouldGenerate(world)) return;
 
-			// Ask the placement helper if this chunk is the exact spawn point for a fortress
-			if (NetherFortressPlacementHelper.shouldGenerateHere(world, originChunkX, originChunkZ)) {
+			// Ask the placement logic if this chunk is the exact spawn point for a fortress
+			if (NetherFortressPlacementLogic.shouldGenerateHere(world, originChunkX, originChunkZ)) {
 				netherFortressGenerator.generate(chunkProvider, world, originChunkX, originChunkZ);
 			}
 		}

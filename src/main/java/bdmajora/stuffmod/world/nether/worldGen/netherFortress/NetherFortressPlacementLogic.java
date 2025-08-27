@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-public class NetherFortressPlacementHelper {
+public class NetherFortressPlacementLogic {
 
 	// ---------------------------
 	// CONFIG
@@ -17,11 +17,11 @@ public class NetherFortressPlacementHelper {
 
 	// Normal mode settings
 	private static final int NORMAL_CANDIDATE_DISTANCE_CHUNKS = 8;   // 128 blocks
-	private static final int NORMAL_MIN_GAP_CHUNKS = 24;              // 384 blocks
+	private static final int NORMAL_MIN_GAP_CHUNKS = 24;             // 384 blocks
 
 	// Test mode settings (more frequent, closer together)
-	private static final int TEST_CANDIDATE_DISTANCE_CHUNKS = 2;      // 32 blocks
-	private static final int TEST_MIN_GAP_CHUNKS = 4;                 // 64 blocks
+	private static final int TEST_CANDIDATE_DISTANCE_CHUNKS = 2;     // 32 blocks
+	private static final int TEST_MIN_GAP_CHUNKS = 4;                // 64 blocks
 
 	// ---------------------------
 	// Active settings based on mode
@@ -46,7 +46,24 @@ public class NetherFortressPlacementHelper {
 		}
 	}
 
+	/**
+	 * Simple RNG gate for fortress generation.
+	 * Adjust denominator to change global rarity.
+	 */
+	public static boolean shouldGenerate(World world) {
+		// Example: 1-in-6 chance
+		return world.rand.nextInt(6) == 0;
+	}
+
+	/**
+	 * Determines if a fortress should generate at this chunk.
+	 */
 	public static boolean shouldGenerateHere(World world, int originChunkX, int originChunkZ) {
+		// RNG gate first
+		if (!shouldGenerate(world)) {
+			return false;
+		}
+
 		PlacementInfo info = getPlacementInfo(world, originChunkX, originChunkZ);
 		if (info == null) return false;
 

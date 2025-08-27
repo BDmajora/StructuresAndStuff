@@ -49,8 +49,8 @@ public class NetherFortressGenerator extends GeneralStructureGenerator {
 
 	@Override
 	public void generate(IChunkProvider chunkProvider, World world, int originChunkX, int originChunkZ) {
-		NetherFortressPlacementHelper.PlacementInfo info =
-			NetherFortressPlacementHelper.getPlacementInfo(world, originChunkX, originChunkZ);
+		NetherFortressPlacementLogic.PlacementInfo info =
+			NetherFortressPlacementLogic.getPlacementInfo(world, originChunkX, originChunkZ);
 		if (info == null) return;
 
 		Random rand = info.rand;
