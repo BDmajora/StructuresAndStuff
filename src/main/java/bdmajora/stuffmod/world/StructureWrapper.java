@@ -61,21 +61,6 @@ public class StructureWrapper {
 
 	/**
 	 * Builds a region for a component relative to the given base coordinates and orientation.
-	 *
-	 * This provides the same placement math used by the original component helper,
-	 * but returns a StructureWrapper (no other terminology is used).
-	 *
-	 * @param x base X
-	 * @param y base Y
-	 * @param z base Z
-	 * @param offsetX local offset X
-	 * @param offsetY local offset Y
-	 * @param offsetZ local offset Z
-	 * @param sizeX size along X
-	 * @param sizeY size along Y
-	 * @param sizeZ size along Z
-	 * @param orientation 0..3 orientation (rotation)
-	 * @return a new StructureWrapper covering that transformed space
 	 */
 	public static StructureWrapper getComponentToAddArea(
 		int x, int y, int z,
@@ -136,12 +121,32 @@ public class StructureWrapper {
 	}
 
 	/**
-	 * Returns true if the given coordinates are inside this region.
+	 * Alias for collidesWith method.
 	 */
-	public boolean containsPoint(int x, int y, int z) {
-		return x >= minX && x <= maxX &&
-			y >= minY && y <= maxY &&
-			z >= minZ && z <= maxZ;
+	public boolean intersects(StructureWrapper other) {
+		return collidesWith(other);
+	}
+
+	/**
+	 * Checks if this structure overlaps another (alias for collidesWith).
+	 */
+	public boolean overlaps(StructureWrapper other) {
+		return collidesWith(other);
+	}
+
+	/**
+	 * Returns a new StructureWrapper that merges this and another.
+	 * Neither original wrapper is modified.
+	 */
+	public StructureWrapper merge(StructureWrapper other) {
+		return new StructureWrapper(
+			Math.min(this.minX, other.minX),
+			Math.min(this.minY, other.minY),
+			Math.min(this.minZ, other.minZ),
+			Math.max(this.maxX, other.maxX),
+			Math.max(this.maxY, other.maxY),
+			Math.max(this.maxZ, other.maxZ)
+		);
 	}
 
 	/**
@@ -154,6 +159,15 @@ public class StructureWrapper {
 		this.maxX = Math.max(this.maxX, other.maxX);
 		this.maxY = Math.max(this.maxY, other.maxY);
 		this.maxZ = Math.max(this.maxZ, other.maxZ);
+	}
+
+	/**
+	 * Returns true if the given coordinates are inside this region.
+	 */
+	public boolean containsPoint(int x, int y, int z) {
+		return x >= minX && x <= maxX &&
+			y >= minY && y <= maxY &&
+			z >= minZ && z <= maxZ;
 	}
 
 	/**
@@ -194,51 +208,30 @@ public class StructureWrapper {
 		return maxZ;
 	}
 
-	/**
-	 * @return width along X-axis.
-	 */
 	public int getWidth() {
 		return maxX - minX + 1;
 	}
 
-	/**
-	 * @return height along Y-axis.
-	 */
 	public int getHeight() {
 		return maxY - minY + 1;
 	}
 
-	/**
-	 * Alias for getHeight().
-	 */
 	public int getYSize() {
 		return getHeight();
 	}
 
-	/**
-	 * @return depth along Z-axis.
-	 */
 	public int getDepth() {
 		return maxZ - minZ + 1;
 	}
 
-	/**
-	 * @return the center X coordinate.
-	 */
 	public int getCenterX() {
 		return minX + getWidth() / 2;
 	}
 
-	/**
-	 * @return the center Y coordinate.
-	 */
 	public int getCenterY() {
 		return minY + getHeight() / 2;
 	}
 
-	/**
-	 * @return the center Z coordinate.
-	 */
 	public int getCenterZ() {
 		return minZ + getDepth() / 2;
 	}
@@ -249,12 +242,5 @@ public class StructureWrapper {
 			"min=(" + minX + ", " + minY + ", " + minZ + ")" +
 			", max=(" + maxX + ", " + maxY + ", " + maxZ + ")" +
 			'}';
-	}
-
-	/**
-	 * Alias for collidesWith method.
-	 */
-	public boolean intersects(StructureWrapper other) {
-		return collidesWith(other);
 	}
 }
