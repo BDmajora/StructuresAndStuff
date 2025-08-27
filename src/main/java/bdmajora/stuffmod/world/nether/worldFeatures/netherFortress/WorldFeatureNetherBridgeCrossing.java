@@ -1,16 +1,20 @@
 package bdmajora.stuffmod.world.nether.worldFeatures.netherFortress;
 
+import bdmajora.stuffmod.world.StructureWrapper;
+import bdmajora.stuffmod.world.WorldFeatureGenerationExtended;
 import bdmajora.stuffmod.world.nether.blockPicking.netherFortress.FortressBlocks;
 import net.minecraft.core.world.World;
-import net.minecraft.core.world.generate.feature.WorldFeature;
 
 import java.util.Random;
 
-public class WorldFeatureNetherBridgeCrossing extends WorldFeature {
+public class WorldFeatureNetherBridgeCrossing extends WorldFeatureGenerationExtended {
 	private final FortressBlocks fb;
 
 	public WorldFeatureNetherBridgeCrossing(FortressBlocks blocks) {
 		this.fb = blocks;
+
+		// define unrotated bounding box (width=7, height=8, depth=7)
+		setStructure(new StructureWrapper(0, 0, 0, 6, 7, 6));
 	}
 
 	@Override

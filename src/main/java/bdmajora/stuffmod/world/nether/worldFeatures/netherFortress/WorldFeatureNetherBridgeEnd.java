@@ -1,14 +1,15 @@
 package bdmajora.stuffmod.world.nether.worldFeatures.netherFortress;
 
+import bdmajora.stuffmod.world.StructureWrapper;
+import bdmajora.stuffmod.world.WorldFeatureGenerationExtended;
 import bdmajora.stuffmod.world.nether.blockPicking.netherFortress.FortressBlocks;
 import net.minecraft.core.world.World;
-import net.minecraft.core.world.generate.feature.WorldFeature;
 
 import java.util.Random;
 
 import static net.betterthanadventure.utils.BiomeFinder.seed;
 
-public class WorldFeatureNetherBridgeEnd extends WorldFeature {
+public class WorldFeatureNetherBridgeEnd extends WorldFeatureGenerationExtended {
 	private final FortressBlocks fb;
 	private final int fillSeed;
 	private final int rotation;
@@ -17,6 +18,9 @@ public class WorldFeatureNetherBridgeEnd extends WorldFeature {
 		this.fb = blocks;
 		this.rotation = ((rotation % 360) + 360) % 360; // normalize
 		this.fillSeed = Math.toIntExact(seed);
+
+		// define unrotated bounding box (width=5, height=6, depth=8)
+		setStructure(new StructureWrapper(0, 0, 0, 4, 5, 7));
 	}
 
 	@Override

@@ -1,19 +1,23 @@
 package bdmajora.stuffmod.world.nether.worldFeatures.netherFortress;
 
+import bdmajora.stuffmod.world.StructureWrapper;
+import bdmajora.stuffmod.world.WorldFeatureGenerationExtended;
 import bdmajora.stuffmod.world.nether.blockPicking.netherFortress.FortressBlocks;
 import net.minecraft.core.block.Blocks;
 import net.minecraft.core.block.entity.TileEntityMobSpawner;
 import net.minecraft.core.world.World;
-import net.minecraft.core.world.generate.feature.WorldFeature;
 
 import java.util.Random;
 
-public class WorldFeatureNetherBridgeThrone extends WorldFeature {
+public class WorldFeatureNetherBridgeThrone extends WorldFeatureGenerationExtended {
 	private final FortressBlocks fb;
 	private boolean hasSpawner;
 
 	public WorldFeatureNetherBridgeThrone(FortressBlocks blocks) {
 		this.fb = blocks;
+
+		// Define unrotated bounding box of this feature (7x9x9: x=0..6, y=0..8, z=0..8)
+		setStructure(new StructureWrapper(0, 0, 0, 6, 8, 8));
 	}
 
 	@Override
@@ -55,7 +59,7 @@ public class WorldFeatureNetherBridgeThrone extends WorldFeature {
 			world.setBlockWithNotify(spawnerX, spawnerY, spawnerZ, Blocks.MOBSPAWNER.id());
 			TileEntityMobSpawner spawner = (TileEntityMobSpawner) world.getTileEntity(spawnerX, spawnerY, spawnerZ);
 			if (spawner != null) {
-				spawner.setMobId("Blaze"); // Replace with FortressPalette.spawner_mob if you want config-based
+				spawner.setMobId("Blaze");
 			}
 		}
 

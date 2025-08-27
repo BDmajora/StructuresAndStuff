@@ -1,22 +1,36 @@
 package bdmajora.stuffmod.world.nether.worldFeatures.netherFortress;
 
-import bdmajora.stuffmod.ModConfig;
+import bdmajora.stuffmod.world.WorldFeatureGenerationExtended;
+import bdmajora.stuffmod.world.StructureWrapper;
+import bdmajora.stuffmod.world.PieceRotation;
 import bdmajora.stuffmod.world.nether.blockPicking.netherFortress.FortressBlocks;
 import net.minecraft.core.block.Blocks;
 import net.minecraft.core.world.World;
-import net.minecraft.core.world.generate.feature.WorldFeature;
 
 import java.util.Random;
 
-public class WorldFeatureNetherBridgeEntrance extends WorldFeature {
+public class WorldFeatureNetherBridgeEntrance extends WorldFeatureGenerationExtended {
 	private final FortressBlocks fb;
 
 	public WorldFeatureNetherBridgeEntrance(FortressBlocks blocks) {
 		this.fb = blocks;
+
+		// Define unrotated bounding box of this feature (13×14×13)
+		StructureWrapper bounds = new StructureWrapper(
+			0, 0, 0,  // min corner
+			12, 13, 12 // max corner
+		);
+		setStructure(bounds);
 	}
 
 	@Override
 	public boolean place(World world, Random random, int x, int y, int z) {
+		// Apply rotation to base coordinates
+		StructureWrapper area = getStructure();
+		int minX = x + area.getMinX();
+		int minY = y + area.getMinY();
+		int minZ = z + area.getMinZ();
+
 		// === Base platform & hollow interior ===
 		fillWithBlocks(world, x,     y + 3, z,     x + 12, y + 4,  z + 12, fb.brick.id(), fb.brick.id()); // base layer
 		fillWithBlocks(world, x,     y + 5, z,     x + 12, y + 13, z + 12, 0, 0); // hollow interior

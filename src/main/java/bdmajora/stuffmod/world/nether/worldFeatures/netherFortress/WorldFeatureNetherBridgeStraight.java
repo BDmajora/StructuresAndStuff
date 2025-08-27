@@ -1,18 +1,22 @@
 package bdmajora.stuffmod.world.nether.worldFeatures.netherFortress;
 
+import bdmajora.stuffmod.world.StructureWrapper;
+import bdmajora.stuffmod.world.WorldFeatureGenerationExtended;
 import bdmajora.stuffmod.world.nether.blockPicking.netherFortress.FortressBlocks;
 import net.minecraft.core.world.World;
-import net.minecraft.core.world.generate.feature.WorldFeature;
 
 import java.util.Random;
 
-public class WorldFeatureNetherBridgeStraight extends WorldFeature {
+public class WorldFeatureNetherBridgeStraight extends WorldFeatureGenerationExtended {
 	private final FortressBlocks fb;
 	private final int rotation; // 0, 90, 180, 270
 
 	public WorldFeatureNetherBridgeStraight(FortressBlocks blocks, int rotation) {
 		this.fb = blocks;
 		this.rotation = ((rotation % 360) + 360) % 360; // normalize
+
+		// define unrotated bounding box
+		setStructure(new StructureWrapper(0, 0, 0, 4, 9, 18));
 	}
 
 	@Override
