@@ -34,6 +34,9 @@ public class NetherFortressPlacementLogic {
 		TEST_MODE ? TEST_MIN_GAP_CHUNKS : NORMAL_MIN_GAP_CHUNKS;
 
 	// Store generated fortress chunk coords
+	// NOTE: Compared to PersistentStructureGenerationTemplate,
+	// this only tracks chunk coords, not actual *structure pieces/templates*.
+	// Missing: coordMap with persistent structure storage.
 	private static final Set<ChunkCoord> GENERATED_LOCATIONS = new HashSet<>();
 
 	// Simple immutable chunk coordinate type
@@ -69,6 +72,9 @@ public class NetherFortressPlacementLogic {
 	/**
 	 * Simple RNG gate for fortress generation.
 	 * Adjust denominator to change global rarity.
+	 *
+	 * Missing: integration with recursiveGenerate / generateStructuresInChunk
+	 * that PersistentStructureGenerationTemplate provides for chunk-based workflow.
 	 */
 	public static boolean shouldGenerate(World world) {
 		// Example: 1-in-6 chance
@@ -77,6 +83,9 @@ public class NetherFortressPlacementLogic {
 
 	/**
 	 * Determines if a fortress should generate at this chunk.
+	 *
+	 * Missing: spatial utilities like isInsideStructure, getNearestInstance,
+	 * and collision checks against bounding boxes.
 	 */
 	public static boolean shouldGenerateHere(World world, int originChunkX, int originChunkZ) {
 		// RNG gate first
@@ -103,6 +112,9 @@ public class NetherFortressPlacementLogic {
 
 	/**
 	 * Calculates deterministic placement info for a chunk candidate.
+	 *
+	 * Missing: abstraction layer for reuse (PersistentStructureGenerationTemplate
+	 * uses abstract methods so other structures can plug in).
 	 */
 	public static PlacementInfo getPlacementInfo(World world, int originChunkX, int originChunkZ) {
 		// Determine region coords
@@ -133,6 +145,10 @@ public class NetherFortressPlacementLogic {
 
 	/**
 	 * Clears stored fortress locations — call this on world load/reload.
+	 *
+	 * Missing: piece + bounding-box management
+	 * (PersistentStructureGenerationTemplate keeps track of structure pieces
+	 * and their bounding boxes, while this only tracks chunk coords).
 	 */
 	public static void reset() {
 		GENERATED_LOCATIONS.clear();
